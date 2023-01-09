@@ -1,0 +1,39 @@
+.bg-cover {
+    background-image: url('../images/bg.jpg');
+    background-size: cover;
+    background-attachment: fixed;
+}
+
+.overlay {
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+.pointer {
+    cursor: pointer;
+}
+
+.card .card-body {
+    border-radius: 10px;
+    transition: all ease .3s;
+    background-color: #eee;
+}
+
+.card:hover .card-body {
+    background-color: white;
+}
+
+.card:hover i {
+    scale: 1.5;
+}
+
+.title {
+    font-size: 5em;
+    text-transform: capitalize;
+    font-weight: bold;
+}
+
+@media screen and (max-width: 768px) {
+    .title {
+        font-size: xx-large
+    }
+}
