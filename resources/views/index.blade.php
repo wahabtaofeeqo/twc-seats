@@ -1,12 +1,12 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="bg-cover">
+<div class="bg-cover1">
     <div class="overlay py-5">
         <div class="container">
 
-            <h4 class="text-white"><strong>Wristband Event</strong></h4>
-            <p class="mb-5 text-white">Lorem ipsum, dolor sit amet consectetur adipisicing e</p>
+            <h4 class="text-white"><strong>Lagos Polo Club (2023)</strong></h4>
+            <p class="mb-5 text-white"> The Lagos Polo Club the premier sporting Polo Club in Nigeria, with an exceptional calibre of members.</p>
 
             <div class="row">
                 @foreach ($seats as $seat)

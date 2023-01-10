@@ -1,6 +1,12 @@
 .bg-cover {
-    background-image: url('../images/bg.jpg');
-    background-size: cover;
+    background-image: url('../images/polo1.jpeg');
+    background-size: 100% 100%;
+    background-attachment: fixed;
+}
+
+.bg-cover1 {
+    background-image: url('../images/polo.jpeg');
+    background-size: 100% 100%;
     background-attachment: fixed;
 }
 
