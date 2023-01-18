@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>TWC- Happy New Year</title>
+        <title>Lagos Polo Club | 2023 </title>
 
         <!-- Fonts -->
         <link href="https://fonts.bunny.net/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
@@ -22,7 +22,7 @@
             html, body {
                 height: 100%;
             }
-            
+
             body {
                 font-family: 'Nunito', sans-serif;
             }
@@ -57,6 +57,33 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                         <button class="btn btn-success px-5">Payment</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="bookModal" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Book a seat</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="bookForm">
+                    <div class="modal-body">
+                        <div class="mb-4">
+                            <input type="text" name="name" required class="form-control rounded-0" placeholder="Name">
+                        </div>
+                        <div class="mb-4">
+                            <input type="email" name="email" required class="form-control rounded-0" placeholder="Email">
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button class="btn btn-success px-5">Book</button>
                     </div>
                 </form>
             </div>
@@ -118,6 +145,33 @@
             //
             handler.openIframe();
         }
+
+        $("#bookForm").submit(function(e) {
+            e.preventDefault();
+            data = $(this).serialize();
+            axios.post(`/api/book`, data)
+                .then(res => {
+                    toastr.success(res.data.message)
+                    window.location.reload();
+                })
+                .catch(e => {
+                    let message = e.response?.data?.message || e.message
+                    toastr.error(message)
+                })
+        })
+
+        $(".btn-logout").click(function(e) {
+            axios.get(`/api/logout`)
+                .then(res => {
+                    toastr.success(res.data.message)
+                    window.location.reload();
+                })
+                .catch(e => {
+                    let message = e.response?.data?.message || e.message
+                    toastr.error(message)
+                })
+        })
+
     </script>
     </body>
 </html>
