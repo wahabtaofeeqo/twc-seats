@@ -14,8 +14,8 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', 'IndexController@index');
-Route::get('/seats', 'IndexController@seats');
 Route::get('/login', 'LoginController@login');
+Route::get('/seats', 'IndexController@seats')->name('seats');
 Route::get('/dashboard', 'IndexController@dash')->name('dashboard')->middleware('auth');
 Route::post('/login', 'LoginController@authenticate')->name('login');
 

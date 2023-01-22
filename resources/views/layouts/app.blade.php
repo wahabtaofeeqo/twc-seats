@@ -41,17 +41,23 @@
                 <form id="buyForm">
                     <div class="modal-body">
                         <div class="mb-4">
-                            <input type="text" id="user-name" required class="form-control rounded-0" placeholder="Name">
+                            <input type="text" id="user-name" name="name" required class="form-control rounded-0" placeholder="Name">
                         </div>
                         <div class="mb-4">
-                            <input type="email" id="user-email" required class="form-control rounded-0" placeholder="Email">
+                            <input type="email" id="user-email" name="email" required class="form-control rounded-0" placeholder="Email">
                         </div>
 
-                        <div>
+                        <select name="days[]" id="user-days" required class="form-control" multiple>
+                            <option value="">Select day</option>
+                            <option value="all">All Days</option>
+                            @for ($i = 0; $i < 20; $i++)
+                                <option value="{{$i + 1}}">Day {{$i + 1}}</option>
+                            @endfor
+                        </select>
+
+                        <div class="d-none">
                             <input type="number" readonly class="form-control rounded-0" value="500">
                         </div>
-
-                        <input type="hidden" id="seat-id-field">
                     </div>
 
                     <div class="modal-footer">
@@ -63,7 +69,7 @@
         </div>
     </div>
 
-    <!-- Modal -->
+    <!-- Admin Book Modal -->
     <div class="modal fade" id="bookModal" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -79,6 +85,13 @@
                         <div class="mb-4">
                             <input type="email" name="email" required class="form-control rounded-0" placeholder="Email">
                         </div>
+                        <select name="days[]" required class="form-control" multiple>
+                            <option value="">Select day</option>
+                            <option value="all">All Days</option>
+                            @for ($i = 0; $i < 20; $i++)
+                                <option value="{{$i + 1}}">Day {{$i + 1}}</option>
+                            @endfor
+                        </select>
                     </div>
 
                     <div class="modal-footer">
@@ -101,39 +114,52 @@
     <script>
 
         $(".available").click(function(e) {
-            let id = $(this).attr('data-id');
-            $('#seat-id-field').val(id);
             $("#formModal").modal('show');
         })
 
+        //
+        $("#buyForm").submit(function(e) {
+            e.preventDefault();
+            let data = $(this).serialize();
+            axios.post(`/api/confirm`, data)
+                .then(res => {
+                    toastr.success('Redirecting...')
+                    payWithPaystack({
+                        days: $('#user-days').val(),
+                        name: $('#user-name').val(),
+                        email: $('#user-email').val(),
+                    });
+                })
+                .catch(e => {
+                    let message = e.response?.data?.message || e.message
+                    toastr.error(message)
+                })
+        })
 
         //
-        const paymentForm = document.getElementById('buyForm');
-        paymentForm.addEventListener("submit", payWithPaystack, false);
-        function payWithPaystack(e) {
-            e.preventDefault();
+        let payWithPaystack = (data) => {
+            let amount = 0;
+            let isAll = data.days.includes('all');
+            if(isAll) amount = 25000 * 20;
+
+            else {
+                data.days.forEach(day => {
+                    amount += 25000
+                });
+            }
+
             let handler = PaystackPop.setup({
                 key: 'pk_test_379e4193510b67197fa56d8783f3c64e3386d3e7',
-                name: document.getElementById("user-name").value,
-                email: document.getElementById("user-email").value,
-                amount: 100 * 100,
+                name: data.name,
+                email: data.email,
+                amount: amount * 100,
                 onClose: function() {
-                    //
+                    toastr.info('Process terminated')
                 },
                 callback: function(response) {
-
-                    //
-                    const input = {
-                        name: document.getElementById("user-name").value,
-                        email: document.getElementById("user-email").value,
-                        id: document.getElementById("seat-id-field").value,
-                    }
-
-                    //
-                    axios.post(`/api/verify/${response.reference}`, input)
+                    axios.post(`/api/verify/${response.reference}`, data)
                         .then(res => {
-                            const data = res.data;
-                            toastr.success(data.message)
+                            toastr.success(res.data.message)
                             window.location.reload();
                         })
                         .catch(e => {

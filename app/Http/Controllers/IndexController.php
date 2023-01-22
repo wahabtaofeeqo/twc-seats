@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Day;
 use App\Models\Seat;
 use App\Models\User;
+use App\Models\Booked;
 use Http;
 use Auth;
 use Carbon\Carbon;
@@ -17,26 +19,22 @@ class IndexController extends Controller
         return view('welcome');
     }
 
-    public function seats()
+    public function seats(Request $request)
     {
-        // Available seats for Today
-        $seats = Seat::with('user')
-            ->whereDate('created_at', Carbon::today())->get();
+        $day = $request->day ?? 1;
+        $model = Day::whereDate('event_date', date('Y-m-d'))
+            ->orWhere('day', $day)->first();
 
-        // Create if empty
-        if($seats->isEmpty()) {
-            for ($i = 0; $i < 62; $i++) {
-                Seat::create([]);
-            }
-
-            //
-            $seats = Seat::with('user')
-                ->whereDate('created_at', Carbon::today())->get();
-        }
+        //
+        $available = 62 - $model->total;
+        $bookeds = Booked::with('user')->where('day', $day)
+            ->orWhere('day', 'all')->get();
 
         //
         return view('index', [
-            'seats' => $seats
+            'day' => $day,
+            'bookeds' => $bookeds,
+            'available' => $available
         ]);
     }
 
@@ -49,14 +47,14 @@ class IndexController extends Controller
     public function store(Request $request, $ref)
     {
         $input = $request->all();
-        $seat = Seat::findOrFail($input['id']);
-
         $url = "https://api.paystack.co/transaction/verify/$ref";
         $token = config('paystack.secret');
         $response = Http::withToken($token)->get($url);
 
         $data = $response->object();
-        $responseError = $response->clientError() ?? $response->serverError();
+        $responseError = $response->clientError()
+            ?? $response->serverError() ?? $response->failed();
+
         if ($responseError) {
             return response([
                 'message' => 'Unable to verify payment',
@@ -64,13 +62,19 @@ class IndexController extends Controller
             ], 400);
         }
 
-        //
-        unset($input['id']);
-        $user = User::create($input);
+        // User
+        $user = User::firstOrCreate([
+            'email' => $request->email
+        ], ['name' => $request->name]);
 
-        //
-        $seat->user_id = $user->id;
-        $seat->save();
+        $days = $request->days;
+        $isAll = in_array('all', $days);
+        if($isAll) {
+            $this->doBook('all', $user);
+        }
+        else {
+            foreach ($days as $key => $day) $this->doBook($day, $user);
+        }
 
         //
         return response([
@@ -81,60 +85,152 @@ class IndexController extends Controller
 
     public function book(Request $request)
     {
-        // Find a free seat for today
-        $seat = Seat::where('user_id', null)
-            ->whereDate('created_at', Carbon::today())->first();
-
-        if(!$seat) {
-            return response([
-                'status' => false,
-                'message' => 'No free Seat for booking Today',
-            ], 400);
-        }
-
+        // User
         $user = User::firstOrCreate([
             'email' => $request->email
-        ], $request->all());
+        ], ['name' => $request->name]);
 
-        // Check if user has book seat Today
-        $hasBooked = Seat::where('user_id', $user->id)
-            ->whereDate('created_at', Carbon::today())->exists();
+        // Check is seat is available
+        $currentDay = 0;
+        $notAvailable = false;
+        $days = $request->days;
 
-        if($hasBooked) {
+        $isAll = in_array('all', $days);
+        foreach ($days as $key => $value) {
+            $currentDay = $value;
+
+            // Check day
+            if($value != 'all') {
+                $day = Day::where('day', $value)->first();
+                if($day->total >= 62) {
+                    $notAvailable = true;
+                    $reason = 'No Seat for booking on Day: ' . $currentDay;
+                    break;
+                }
+            }
+
+            // Check User bookeds
+            $hasBooked = Booked::where('user_id', $user->id)
+                ->where(function($q) use ($value) {
+                    $q->where('day', $value)
+                        ->orWhere('day', 'all');
+                })->exists();
+
+            if($hasBooked) {
+                $notAvailable = true;
+                $reason = 'This user already booked for Day: ' . $currentDay;
+                break;
+            }
+        }
+
+        if($notAvailable) {
             return response([
                 'status' => false,
-                'message' => 'This person has a Seat already for Today',
+                'message' => $reason
             ], 400);
         }
 
-        // Book the Seat
-        $seat->user_id = $user->id;
-        $seat->save();
+        if($isAll) {
+            $this->doBook('all', $user);
+        }
+        else {
+            foreach ($days as $key => $day) {
+                $this->doBook($day, $user);
+            }
+        }
 
         //
         return response([
             'status' => true,
             'message' => 'Seat booked successfully',
-            'data' => $seat
         ]);
+    }
+
+    private function doBook($day, $user) {
+
+        //
+        Booked::create([
+            'day' => $day,
+            'user_id' => $user->id
+        ]);
+
+        // Update Day
+        if($day == 'all') {
+            $models = Day::all();
+            foreach ($models as $key => $model) {
+                $model->total = $model->total + 1;
+                $model->save();
+            }
+        }
+        else {
+            $model = Day::where('day', $day)->first();
+            $model->total = $model->total + 1;
+            $model->save();
+        }
     }
 
     public function dash()
     {
-        $seats = Seat::count();
-        $users = User::paginate(20);
-
-        $todayFreeSeats = Seat::whereDate('created_at', Carbon::today())
-            ->where('user_id', null)->count();
-
-        $todayBookedSeats = Seat::whereDate('created_at', Carbon::today())
-            ->where('user_id', '!=', null)->count();
+        $users = User::with('bookeds')->paginate(20);
 
         //
         return view('home', [
             'users' => $users,
-            'seats' => $seats,
-            'today' => $todayBookedSeats . " / " . $todayFreeSeats
+        ]);
+    }
+
+
+    public function confirm(Request $request)
+    {
+        // User
+        $user = User::firstOrCreate([
+            'email' => $request->email
+        ], ['name' => $request->name]);
+
+        // Check is seat is available
+        $currentDay = 0;
+        $notAvailable = false;
+        $days = $request->days;
+
+        $isAll = in_array('all', $days);
+        foreach ($days as $key => $value) {
+            $currentDay = $value;
+
+            // Check day
+            if($value != 'all') {
+                $day = Day::where('day', $value)->first();
+                if($day->total >= 62) {
+                    $notAvailable = true;
+                    $reason = 'No Seat for booking on Day: ' . $currentDay;
+                    break;
+                }
+            }
+
+            // Check User bookeds
+            $hasBooked = Booked::where('user_id', $user->id)
+                ->where(function($q) use ($value) {
+                    $q->where('day', $value)
+                        ->orWhere('day', 'all');
+                })->exists();
+
+            if($hasBooked) {
+                $notAvailable = true;
+                $reason = 'This user already booked for Day: ' . $currentDay;
+                break;
+            }
+        }
+
+        if($notAvailable) {
+            return response([
+                'status' => false,
+                'message' => $reason
+            ], 400);
+        }
+
+        //
+        return response([
+            'status' => true,
+            'message' => 'Confirmed'
         ]);
     }
 

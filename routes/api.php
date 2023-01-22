@@ -16,5 +16,6 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('logout', 'IndexController@logout');
 Route::post('book', 'IndexController@book');
+Route::post('confirm', 'IndexController@confirm');
 Route::post('verify/{ref}', 'IndexController@store');
 
