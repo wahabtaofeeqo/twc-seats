@@ -5,14 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Booked extends Model
+class Ticket extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['day', 'user_id', 'type'];
+    protected $fillable = [
+        'user_id', 'total', 'day'
+    ];
 
     /**
-     * Get the user that owns the Booked
+     * Get the user that owns the Seat
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */

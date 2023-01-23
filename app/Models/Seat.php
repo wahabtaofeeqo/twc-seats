@@ -8,7 +8,12 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
 class Seat extends Model
 {
-    use HasFactory, HasUuids;
+    use HasFactory;
+
+    protected $fillable = [
+        'day', 'event_date'
+    ];
+
     /**
      * Get the user that owns the Seat
      *

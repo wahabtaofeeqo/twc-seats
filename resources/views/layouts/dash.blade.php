@@ -30,6 +30,28 @@
     </head>
     <body class="antialiased">
 
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container">
+            <a class="navbar-brand" href="#">Dashboard</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                <a class="nav-link" href="/">Home</a>
+                </li>
+                <li class="nav-item">
+                <a class="nav-link" href="{{route('dashboard')}}">Bookings</a>
+                </li>
+                <li class="nav-item">
+                <a class="nav-link active" href="{{route('tickets')}}">Tickets</a>
+                </li>
+            </ul>
+            </div>
+        </div>
+    </nav>
     @yield('content')
 
     <!-- Modal -->
@@ -60,7 +82,6 @@
                         </select>
 
                         <input type="hidden" id="seat-id" name="id">
-                        <input type="hidden" id="seat-type" name="type">
                     </div>
 
                     <div class="modal-footer">
@@ -89,18 +110,9 @@
                             <input type="email" name="email" required class="form-control rounded-0" placeholder="Email">
                         </div>
 
-                        <div class="mb-4">
+                        <div>
                             <input type="number" min="0" name="total" required class="form-control rounded-0" placeholder="How many?">
                         </div>
-
-                        <select name="day" required class="form-control">
-                            <option value="">Select day</option>
-                            <option value="7">Day 7</option>
-                            <option value="8">Day 8</option>
-                            <option value="13">Day 13</option>
-                            <option value="14">Day 14</option>
-                            <option value="20">Day 20</option>
-                        </select>
                     </div>
 
                     <div class="modal-footer">
@@ -155,20 +167,6 @@
 
     <script>
 
-        $(".available").click(function(e) {
-            let type = $(this).attr('data-type');
-            let seatId = $(this).attr('data-id');
-            $('#seat-id').val(seatId);
-            $('#seat-type').val(type);
-
-            //
-            $("#formModal").modal('show');
-        })
-
-        $(".buy-ticket").click(function(e) {
-            $("#ticketModal").modal('show');
-        })
-
         $(".confirm").click(function(e) {
             let id = $(this).attr('data-id');
             let type = $(this).attr('data-type');
@@ -184,78 +182,10 @@
                 })
         })
 
-        //
-        $("#buyForm").submit(function(e) {
-            e.preventDefault();
-            let data = $(this).serialize();
-            axios.post(`/api/confirm`, data)
-                .then(res => {
-                    toastr.success(res.data.message)
-                })
-                .catch(e => {
-                    let message = e.response?.data?.message || e.message
-                    toastr.error(message)
-                })
-        })
-
-        $("#ticketForm").submit(function(e) {
-            e.preventDefault();
-            let data = $(this).serialize();
-            axios.post(`/api/tickets`, data)
-                .then(res => {
-                    toastr.success(res.data.message)
-                    $("#ticketModal").modal('hide');
-                })
-                .catch(e => {
-                    let message = e.response?.data?.message || e.message
-                    toastr.error(message)
-                })
-        })
-
-        //
-        let payWithPaystack = (data) => {
-            let amount = 25000;
-            let handler = PaystackPop.setup({
-                key: 'pk_test_379e4193510b67197fa56d8783f3c64e3386d3e7',
-                name: data.name,
-                email: data.email,
-                amount: amount * 100,
-                onClose: function() {
-                    toastr.info('Process terminated')
-                },
-                callback: function(response) {
-                    axios.post(`/api/verify/${response.reference}`, data)
-                        .then(res => {
-                            console.log(res);
-                            toastr.success(res.data.message)
-                            window.location.reload();
-                        })
-                        .catch(e => {
-                            toastr.error('Unable to verify payment')
-                        })
-                }
-            });
-
-            //
-            handler.openIframe();
-        }
-
         $("#bookForm").submit(function(e) {
             e.preventDefault();
             data = $(this).serialize();
             axios.post(`/api/book`, data)
-                .then(res => {
-                    toastr.success(res.data.message)
-                    window.location.reload();
-                })
-                .catch(e => {
-                    let message = e.response?.data?.message || e.message
-                    toastr.error(message)
-                })
-        })
-
-        $(".btn-logout").click(function(e) {
-            axios.get(`/api/logout`)
                 .then(res => {
                     toastr.success(res.data.message)
                     window.location.reload();

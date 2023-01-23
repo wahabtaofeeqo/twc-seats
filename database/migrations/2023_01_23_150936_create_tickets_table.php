@@ -13,12 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('bookeds', function (Blueprint $table) {
+        Schema::create('tickets', function (Blueprint $table) {
             $table->id();
-            $table->string('day');
-            $table->bigInteger('user_id')->unsigned();
-            $table->enum('type', ['white', 'blue'])->default('blue');
+            $table->integer('day')->unsigned();
+            $table->bigInteger('user_id')->unsigned()->unique();
             $table->boolean('confirmed')->nullable()->default(false);
+            $table->integer('total')->unsigned()->nullable()->default(0);
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
         });
@@ -31,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('bookeds');
+        Schema::dropIfExists('tickets');
     }
 };

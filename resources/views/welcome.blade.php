@@ -8,7 +8,9 @@
             <p class="mb-5 col-md-6 mx-auto">
                 The Lagos Polo Club the premier sporting Polo Club in Nigeria, with an exceptional calibre of members.
             </p>
-            <a href="/seats" class="btn btn-lg btn-danger col-md-4">Book a seat</a>
+            <a href="/seats" class="btn btn-lg btn-danger mb-4 me-2">Book a seat</a>
+            <button class="btn btn-lg btn-light mb-4 me-2 buy-ticket">Buy Tickets</button>
+            <button class="btn btn-lg btn-danger mb-4">Book Table</button>
         </div>
     </div>
 </div>

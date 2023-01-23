@@ -7,12 +7,19 @@ use App\Models\Day;
 use App\Models\Seat;
 use App\Models\User;
 use App\Models\Booked;
+use App\Models\Ticket;
 use Http;
 use Auth;
-use Carbon\Carbon;
+use Mail;
+use App\Mail\SeatBooked;
 
 class IndexController extends Controller
 {
+
+    private $firstDay = 7;
+    private $bookableDays = [
+        7, 8, 13, 14, 19, 20
+    ];
 
     public function index()
     {
@@ -21,19 +28,44 @@ class IndexController extends Controller
 
     public function seats(Request $request)
     {
-        $day = $request->day ?? 1;
-        $model = Day::whereDate('event_date', date('Y-m-d'))
-            ->orWhere('day', $day)->first();
+        $day = $request->day ?? $this->firstDay;
+
+        // Check seats
+        $seats = Seat::with('user')->whereDate('event_date', date('Y-m-d'))
+            ->orWhere('day', $day)->orderBy('id', 'asc')->get();
+
+        if($seats->isEmpty() || $seats->count() < 62) {
+            $total = 62 - $seats->count();
+            for ($i = 0; $i < $total; $i++) {
+                Seat::create([
+                    'day' => $day,
+                    'event_date' => date('Y-m-d')
+                ]);
+            }
+
+            // Reload
+            $seats = Seat::with('user')->whereDate('event_date', date('Y-m-d'))
+                ->orWhere('day', $day)->orderBy('id', 'asc')->get();
+        }
 
         //
-        $available = 62 - $model->total;
-        $bookeds = Booked::with('user')->where('day', $day)
-            ->orWhere('day', 'all')->get();
+        $bookeds = Seat::where('user_id', '!=', null)
+            ->where(function($q) use($day) {
+                $q->whereDate('event_date', date('Y-m-d'))
+                    ->orWhere('day', $day);
+            })->count();
+
+        $available = 62 - $bookeds;
+
+        // if ($model) $available = 62 - $model->total;
+        // $bookeds = Booked::with('user')->where('day', $day)
+        //     ->orWhere('day', 'all')->get();
 
         //
         return view('index', [
             'day' => $day,
-            'bookeds' => $bookeds,
+            'seats' => $seats,
+            // 'bookeds' => $bookeds,
             'available' => $available
         ]);
     }
@@ -51,14 +83,21 @@ class IndexController extends Controller
         $token = config('paystack.secret');
         $response = Http::withToken($token)->get($url);
 
-        $data = $response->object();
+        $body = $response->object();
         $responseError = $response->clientError()
             ?? $response->serverError() ?? $response->failed();
 
         if ($responseError) {
             return response([
                 'message' => 'Unable to verify payment',
-                'data' => $data
+                'data' => $body
+            ], 400);
+        }
+
+        if($body->data->status != 'success') {
+            return response([
+                'message' => 'Unable to verify payment',
+                'data' => $body
             ], 400);
         }
 
@@ -70,16 +109,24 @@ class IndexController extends Controller
         $days = $request->days;
         $isAll = in_array('all', $days);
         if($isAll) {
-            $this->doBook('all', $user);
+            $this->doBook('all', $user, $request->id);
         }
         else {
-            foreach ($days as $key => $day) $this->doBook($day, $user);
+            foreach ($days as $key => $day)
+                $this->doBook($day, $user, $request->id);
         }
+
+        // Send Main
+        try {
+            Mail::to('precious@wristbands.ng')
+                ->send(new SeatBooked($user, $body->data));
+        }
+        catch (\Exception $e) {}
 
         //
         return response([
+            'status' => true,
             'message' => 'Payment verified',
-            'data' => $data
         ]);
     }
 
@@ -146,13 +193,17 @@ class IndexController extends Controller
         ]);
     }
 
-    private function doBook($day, $user) {
+    private function doBook($day, $user, $type = null) {
 
         //
-        Booked::create([
+        $data = [
             'day' => $day,
-            'user_id' => $user->id
-        ]);
+            'user_id' => $user->id,
+        ];
+
+        if($type) $data['type'] = $type;
+
+        Booked::create($data);
 
         // Update Day
         if($day == 'all') {
@@ -160,25 +211,54 @@ class IndexController extends Controller
             foreach ($models as $key => $model) {
                 $model->total = $model->total + 1;
                 $model->save();
+
+                //
+                $seat = Seat::firstOrCreate([
+                    'day' => $model->day
+                ]);
+                $seat->user_id = $user->id;
+                $seat->save();
             }
         }
         else {
             $model = Day::where('day', $day)->first();
             $model->total = $model->total + 1;
             $model->save();
+
+            //
+            $seat = Seat::firstOrCreate([
+                'day' => $model->day
+            ]);
+            $seat->user_id = $user->id;
+            $seat->save();
         }
     }
 
     public function dash()
     {
-        $users = User::with('bookeds')->paginate(20);
+        $bookings = Booked::with('user')->paginate(20);
 
         //
         return view('home', [
-            'users' => $users,
+            'bookings' => $bookings,
+            'users' => User::count(),
+            'totalTickets' => Ticket::count(),
+            'totalBookings' => Booked::count()
         ]);
     }
 
+    public function tickets()
+    {
+        $tickets = Ticket::with('user')->paginate(20);
+
+        //
+        return view('ticket', [
+            'tickets' => $tickets,
+            'users' => User::count(),
+            'totalTickets' => Ticket::count(),
+            'totalBookings' => Booked::count()
+        ]);
+    }
 
     public function confirm(Request $request)
     {
@@ -227,21 +307,68 @@ class IndexController extends Controller
             ], 400);
         }
 
+        // Log Booking
+        $days = $request->days;
+        $isAll = in_array('all', $days);
+
+        if($isAll) {
+            $this->doBook('all', $user, $request->type);
+        }
+        else {
+            foreach ($days as $key => $day) $this->doBook($day, $user, $request->type);
+        }
+
         //
         return response([
             'status' => true,
-            'message' => 'Confirmed'
+            'message' => 'Booking has been sent successfully'
         ]);
     }
 
-    public function logout()
+    public function approve(Request $request)
     {
-        Auth::logout();
+        if($request->type == 'booking')
+            $model = Booked::findOrFail($request->id);
+        else
+            $model = Ticket::findOrFail($request->id);
+
+        $model->confirmed = true;
+        $model->save();
 
         //
         return response([
             'status' => true,
-            'message' => 'successful'
+            'message' => 'Booking confirmed successfully'
+        ]);
+    }
+
+    public function ticket(Request $request)
+    {
+        // User
+        $user = User::firstOrCreate([
+            'email' => $request->email
+        ], ['name' => $request->name]);
+
+        $exists = Ticket::where('user_id', $user->id)
+            ->where('day', $request->day)->exists();
+
+        if($exists) {
+            return response([
+                'status' => false,
+                'message' => 'You have already sent a request'
+            ], 400);
+        }
+
+        Ticket::create([
+            'day' => $request->day,
+            'user_id' => $user->id,
+            'total' => $request->total
+        ]);
+
+        //
+        return response([
+            'status' => true,
+            'message' => 'Booking has been sent successfully'
         ]);
     }
 }

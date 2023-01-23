@@ -2,6 +2,7 @@
 
 @section('content')
 <div class="h-100 bg-light">
+
     <div class="container py-3">
 
         <div class="row mb-4">
@@ -39,8 +40,8 @@
         <div class="card border-0">
             <div class="card-body">
                 <div class="mb-4 d-flex justify-content-between">
-                    <h4>Bookings</h4>
-                    <button class="btn btn-info px-4" type="button" data-bs-toggle="modal" data-bs-target="#bookModal">Book Seat</button>
+                    <h4>Tickets</h4>
+                    <button class="btn btn-info px-4 d-none" type="button" data-bs-toggle="modal" data-bs-target="#bookModal">Book Seat</button>
                 </div>
                 <div class="table-responsive">
                     <table class="table table-striped">
@@ -50,12 +51,12 @@
                                 <th scope="col">Name</th>
                                 <th scope="col">Email</th>
                                 <th scope="col">Day</th>
-                                <th scope="col">Type</th>
+                                <th scope="col">Tickets</th>
                                 <th scope="col">Status</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($bookings as $row)
+                            @foreach ($tickets as $row)
                                 <tr>
                                     <th scope="row">
                                         {{$loop->index + 1}}
@@ -70,13 +71,13 @@
                                         {{$row->day}}
                                     </td>
                                     <td>
-                                        {{$row->type}}
+                                        {{$row->total}}
                                     </td>
                                     <td>
                                         @if ($row->confirmed)
                                             <button class="btn btn-sm btn-success">Confirmed</button>
                                         @else
-                                            <button class="btn btn-sm btn-danger confirm" data-id="{{$row->id}}" data-type="booking">Confirm</button>
+                                            <button class="btn btn-sm btn-danger confirm" data-id="{{$row->id}}" data-type="ticket">Confirm</button>
                                         @endif
                                     </td>
                                 </tr>
@@ -84,7 +85,7 @@
                         </tbody>
                     </table>
                 </div>
-                {{$bookings->links()}}
+                {{$tickets->links()}}
             </div>
         </div>
     </div>

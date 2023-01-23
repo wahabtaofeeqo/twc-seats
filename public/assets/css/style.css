@@ -1,13 +1,16 @@
+html, body {
+    height: 100%;
+}
+
 .bg-cover {
     background-image: url('../images/polo1.jpeg');
     background-size: 100% 100%;
     background-attachment: fixed;
 }
 
-.bg-cover1 {
-    background-image: url('../images/polo.jpeg');
-    background-size: 100% 100%;
-    background-attachment: fixed;
+.body {
+    min-height: 100vh;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('../images/polo.jpeg') no-repeat top center;
 }
 
 .overlay {
@@ -18,21 +21,20 @@
     cursor: pointer;
 }
 
-.card .box {
+.box {
     border-radius: 10px;
     transition: all ease .3s;
-    background-color: #eee;
 }
 
 .caption strong {
     display: none;
 }
 
-.card:hover .card-body {
-    background-color: white;
+.box:hover {
+    background-color: #eee;
 }
 
-.card:hover i {
+.box:hover i {
     scale: 1.5;
 }
 

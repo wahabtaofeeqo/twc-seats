@@ -14,8 +14,10 @@ return new class extends Migration
     public function up()
     {
         Schema::create('seats', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->uuid('user_id')->nullable();
+            $table->id();
+            $table->date('event_date')->nullable();
+            $table->integer('day')->unsigned()->default(0);
+            $table->bigInteger('user_id')->unsigned()->nullable();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
         });
