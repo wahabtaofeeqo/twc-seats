@@ -15,10 +15,10 @@ return new class extends Migration
     {
         Schema::create('seats', function (Blueprint $table) {
             $table->id();
-            $table->date('event_date')->nullable();
-            $table->integer('day')->unsigned()->default(0);
-            $table->bigInteger('user_id')->unsigned()->nullable();
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            //$table->date('event_date')->nullable();
+            //$table->integer('day')->unsigned()->default(0);
+            //$table->bigInteger('user_id')->unsigned()->nullable();
+            //$table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
         });
     }

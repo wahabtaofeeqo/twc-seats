@@ -50,7 +50,8 @@
                                 <th scope="col">Name</th>
                                 <th scope="col">Email</th>
                                 <th scope="col">Day</th>
-                                <th scope="col">Type</th>
+                                <th scope="col">Seat Type</th>
+                                <th scope="col">Seat Number</th>
                                 <th scope="col">Status</th>
                             </tr>
                         </thead>
@@ -67,16 +68,18 @@
                                         {{$row->user->email}}
                                     </td>
                                     <td>
-                                        {{$row->day}}
+                                        {{
+                                            $row->event_date ? $row->event_date : $row->day
+                                        }}
                                     </td>
-                                    <td>
-                                        {{$row->type}}
-                                    </td>
+                                    <td>{{$row->type}}</td>
+                                    <td>{{$row->seat_number}}</td>
                                     <td>
                                         @if ($row->confirmed)
                                             <button class="btn btn-sm btn-success">Confirmed</button>
                                         @else
-                                            <button class="btn btn-sm btn-danger confirm" data-id="{{$row->id}}" data-type="booking">Confirm</button>
+                                            <button class="btn btn-sm btn-info confirm" data-id="{{$row->id}}" data-type="booking">Confirm</button>
+                                            <button class="btn btn-sm btn-danger cancel" data-id="{{$row->id}}" data-type="booking">Cancel</button>
                                         @endif
                                     </td>
                                 </tr>

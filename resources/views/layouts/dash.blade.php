@@ -30,172 +30,36 @@
     </head>
     <body class="antialiased">
 
-    <nav class="navbar navbar-expand-lg bg-body-tertiary">
-        <div class="container">
-            <a class="navbar-brand" href="#">Dashboard</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-            </button>
+        @include('modal')
+        <nav class="navbar navbar-expand-lg bg-body-tertiary">
+            <div class="container">
+                <a class="navbar-brand" href="#">Dashboard</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+                </button>
 
-            <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                <a class="nav-link" href="/">Home</a>
-                </li>
-                <li class="nav-item">
-                <a class="nav-link" href="{{route('dashboard')}}">Bookings</a>
-                </li>
-                <li class="nav-item">
-                <a class="nav-link active" href="{{route('tickets')}}">Tickets</a>
-                </li>
-            </ul>
-            </div>
-        </div>
-    </nav>
-    @yield('content')
-
-    <!-- Modal -->
-    <div class="modal fade" id="formModal" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">Book a seat</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                    <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                    <a class="nav-link" href="{{route('dashboard')}}">Bookings</a>
+                    </li>
+                    <li class="nav-item">
+                    <a class="nav-link active" href="{{route('tickets')}}">Tickets</a>
+                    </li>
+                </ul>
                 </div>
-                <form id="buyForm">
-                    <div class="modal-body">
-                        <p class="text-danger">A seat cost the sum of ₦50,000</p>
-                        <div class="mb-4">
-                            <input type="text" id="user-name" name="name" required class="form-control rounded-0" placeholder="Name">
-                        </div>
-                        <div class="mb-4">
-                            <input type="email" id="user-email" name="email" required class="form-control rounded-0" placeholder="Email">
-                        </div>
-
-                        <select name="days[]" id="user-days" required class="form-control" multiple>
-                            <option value="">Select day</option>
-                            <option value="7">Day 7</option>
-                            <option value="8">Day 8</option>
-                            <option value="13">Day 13</option>
-                            <option value="14">Day 14</option>
-                            <option value="20">Day 20</option>
-                        </select>
-
-                        <input type="hidden" id="seat-id" name="id">
-                    </div>
-
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button class="btn btn-success">Send Booking</button>
-                    </div>
-                </form>
             </div>
-        </div>
-    </div>
+        </nav>
+        @yield('content')
 
-    <!-- Ticket Modal -->
-    <div class="modal fade" id="ticketModal" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">Buy Tickets</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form id="ticketForm">
-                    <div class="modal-body">
-                        <div class="mb-4">
-                            <input type="text" name="name" required class="form-control rounded-0" placeholder="Name">
-                        </div>
-                        <div class="mb-4">
-                            <input type="email" name="email" required class="form-control rounded-0" placeholder="Email">
-                        </div>
-
-                        <div>
-                            <input type="number" min="0" name="total" required class="form-control rounded-0" placeholder="How many?">
-                        </div>
-                    </div>
-
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button class="btn btn-success">Continute</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Admin Book Modal -->
-    <div class="modal fade" id="bookModal" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">Book a seat</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form id="bookForm">
-                    <div class="modal-body">
-                        <div class="mb-4">
-                            <input type="text" name="name" required class="form-control rounded-0" placeholder="Name">
-                        </div>
-                        <div class="mb-4">
-                            <input type="email" name="email" required class="form-control rounded-0" placeholder="Email">
-                        </div>
-                        <select name="days[]" id="user-days" required class="form-control" multiple>
-                            <option value="">Select day</option>
-                            <option value="7">Day 7</option>
-                            <option value="8">Day 8</option>
-                            <option value="13">Day 13</option>
-                            <option value="14">Day 14</option>
-                            <option value="20">Day 20</option>
-                        </select>
-                    </div>
-
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button class="btn btn-success px-5">Book</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <script src="https://js.paystack.co/v1/inline.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.2.2/axios.min.js" integrity="sha512-QTnb9BQkG4fBYIt9JGvYmxPpd6TBeKp6lsUrtiVQsrJ9sb33Bn9s0wMQO9qVBFbPX3xHRAsBHvXlcsrnJjExjg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js" integrity="sha512-VEd+nq25CkR676O+pLBnDW09R7VQX9Mdiij052gVCp5yVH3jGtH70Ho/UUv4mJDsEdTvqRCFZg0NKGiojGnUCw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
-    <script>
-
-        $(".confirm").click(function(e) {
-            let id = $(this).attr('data-id');
-            let type = $(this).attr('data-type');
-
-            axios.post(`/api/approve`, {id, type})
-                .then(res => {
-                    toastr.success(res.data.message)
-                    window.location.reload();
-                })
-                .catch(e => {
-                    let message = e.response?.data?.message || e.message
-                    toastr.error(message)
-                })
-        })
-
-        $("#bookForm").submit(function(e) {
-            e.preventDefault();
-            data = $(this).serialize();
-            axios.post(`/api/book`, data)
-                .then(res => {
-                    toastr.success(res.data.message)
-                    window.location.reload();
-                })
-                .catch(e => {
-                    let message = e.response?.data?.message || e.message
-                    toastr.error(message)
-                })
-        })
-
-    </script>
+        <script src="https://js.paystack.co/v1/inline.js"></script>
+        <script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.2.2/axios.min.js" integrity="sha512-QTnb9BQkG4fBYIt9JGvYmxPpd6TBeKp6lsUrtiVQsrJ9sb33Bn9s0wMQO9qVBFbPX3xHRAsBHvXlcsrnJjExjg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js" integrity="sha512-VEd+nq25CkR676O+pLBnDW09R7VQX9Mdiij052gVCp5yVH3jGtH70Ho/UUv4mJDsEdTvqRCFZg0NKGiojGnUCw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script src="{{asset('assets/js/script.js')}}"></script>
     </body>
 </html>

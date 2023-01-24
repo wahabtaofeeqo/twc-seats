@@ -16,6 +16,7 @@ return new class extends Migration
         Schema::create('tickets', function (Blueprint $table) {
             $table->id();
             $table->integer('day')->unsigned();
+            $table->date('event_date')->nullable();
             $table->bigInteger('user_id')->unsigned()->unique();
             $table->boolean('confirmed')->nullable()->default(false);
             $table->integer('total')->unsigned()->nullable()->default(0);

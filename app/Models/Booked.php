@@ -9,7 +9,10 @@ class Booked extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['day', 'user_id', 'type'];
+    protected $fillable = [
+        'day', 'user_id', 'event_date',
+        'type', 'seat_id', 'seat_number'
+    ];
 
     /**
      * Get the user that owns the Booked

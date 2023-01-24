@@ -77,7 +77,8 @@
                                         @if ($row->confirmed)
                                             <button class="btn btn-sm btn-success">Confirmed</button>
                                         @else
-                                            <button class="btn btn-sm btn-danger confirm" data-id="{{$row->id}}" data-type="ticket">Confirm</button>
+                                            <button class="btn btn-sm btn-info confirm" data-id="{{$row->id}}" data-type="ticket">Confirm</button>
+                                            <button class="btn btn-sm btn-danger cancel" data-id="{{$row->id}}" data-type="ticket">Cancel</button>
                                         @endif
                                     </td>
                                 </tr>

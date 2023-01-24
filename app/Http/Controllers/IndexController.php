@@ -31,41 +31,45 @@ class IndexController extends Controller
         $day = $request->day ?? $this->firstDay;
 
         // Check seats
-        $seats = Seat::with('user')->whereDate('event_date', date('Y-m-d'))
-            ->orWhere('day', $day)->orderBy('id', 'asc')->get();
+        $seats = Seat::all();
 
-        if($seats->isEmpty() || $seats->count() < 62) {
-            $total = 62 - $seats->count();
-            for ($i = 0; $i < $total; $i++) {
-                Seat::create([
-                    'day' => $day,
-                    'event_date' => date('Y-m-d')
-                ]);
-            }
+        // if($seats->isEmpty() || $seats->count() < 62) {
+        //     $total = 62 - $seats->count();
+        //     for ($i = 0; $i < $total; $i++) {
+        //         Seat::create([
+        //             'day' => $day,
+        //             'event_date' => date('Y-m-d')
+        //         ]);
+        //     }
 
-            // Reload
-            $seats = Seat::with('user')->whereDate('event_date', date('Y-m-d'))
-                ->orWhere('day', $day)->orderBy('id', 'asc')->get();
-        }
+        //     // Reload
+        //     $seats = Seat::with('user')->whereDate('event_date', date('Y-m-d'))
+        //         ->orWhere('day', $day)->orderBy('id', 'asc')->get();
+        // }
 
         //
-        $bookeds = Seat::where('user_id', '!=', null)
-            ->where(function($q) use($day) {
-                $q->whereDate('event_date', date('Y-m-d'))
-                    ->orWhere('day', $day);
-            })->count();
+        // $bookeds = Seat::where('user_id', '!=', null)
+        //     ->where(function($q) use($day) {
+        //         $q->whereDate('event_date', date('Y-m-d'))
+        //             ->orWhere('day', $day);
+        //     })->count();
 
-        $available = 62 - $bookeds;
+        $available = 62;
+        $model = Day::where('day', $day)->first();
+        if($model) $available -= $model->total;
 
         // if ($model) $available = 62 - $model->total;
         // $bookeds = Booked::with('user')->where('day', $day)
         //     ->orWhere('day', 'all')->get();
 
         //
+        $bookedSeats = Booked::where('day', $day)
+            ->orWhere('day', 'all')->pluck('seat_id')->toArray();
+
         return view('index', [
             'day' => $day,
             'seats' => $seats,
-            // 'bookeds' => $bookeds,
+            'bookeds' => $bookedSeats,
             'available' => $available
         ]);
     }
@@ -177,12 +181,16 @@ class IndexController extends Controller
             ], 400);
         }
 
+        $input = $request->all();
+
         if($isAll) {
+            $input['day'] = 'all';
             $this->doBook('all', $user);
         }
         else {
             foreach ($days as $key => $day) {
-                $this->doBook($day, $user);
+                $input['day'] = $day;
+                $this->doBook($day, $user, $input);
             }
         }
 
@@ -193,16 +201,24 @@ class IndexController extends Controller
         ]);
     }
 
-    private function doBook($day, $user, $type = null) {
+    private function doBook($day, $user, $data) {
+
+        // //
+        // $data = [
+        //     'day' => $day,
+        //     'seat_id' => $seat,
+        //     'user_id' => $user->id,
+        // ];
+
+        // if($type) $data['type'] = $type;
+
+        $data['user_id'] = $user->id;
+        if($day != 'all') {
+            $date = Day::where('day', $day)->first()->event_date;
+            $data['event_date'] = $date;
+        }
 
         //
-        $data = [
-            'day' => $day,
-            'user_id' => $user->id,
-        ];
-
-        if($type) $data['type'] = $type;
-
         Booked::create($data);
 
         // Update Day
@@ -213,11 +229,11 @@ class IndexController extends Controller
                 $model->save();
 
                 //
-                $seat = Seat::firstOrCreate([
-                    'day' => $model->day
-                ]);
-                $seat->user_id = $user->id;
-                $seat->save();
+                // $seat = Seat::firstOrCreate([
+                //     'day' => $model->day
+                // ]);
+                // $seat->user_id = $user->id;
+                // $seat->save();
             }
         }
         else {
@@ -226,20 +242,22 @@ class IndexController extends Controller
             $model->save();
 
             //
-            $seat = Seat::firstOrCreate([
-                'day' => $model->day
-            ]);
-            $seat->user_id = $user->id;
-            $seat->save();
+            // $seat = Seat::firstOrCreate([
+            //     'day' => $model->day
+            // ]);
+            // $seat->user_id = $user->id;
+            // $seat->save();
         }
     }
 
     public function dash()
     {
         $bookings = Booked::with('user')->paginate(20);
+        $days = Day::all();
 
         //
         return view('home', [
+            'days' => $days,
             'bookings' => $bookings,
             'users' => User::count(),
             'totalTickets' => Ticket::count(),
@@ -311,17 +329,38 @@ class IndexController extends Controller
         $days = $request->days;
         $isAll = in_array('all', $days);
 
+        $input = $request->all();
         if($isAll) {
-            $this->doBook('all', $user, $request->type);
+            $input['day'] = 'all';
+            $this->doBook('all', $user, $input);
         }
         else {
-            foreach ($days as $key => $day) $this->doBook($day, $user, $request->type);
+            foreach ($days as $key => $day) {
+                $input['day'] = $day;
+                $this->doBook($day, $user, $input);
+            }
         }
 
         //
         return response([
             'status' => true,
             'message' => 'Booking has been sent successfully'
+        ]);
+    }
+
+    public function cancel(Request $request)
+    {
+        if($request->type == 'booking')
+            $model = Booked::findOrFail($request->id);
+        else
+            $model = Ticket::findOrFail($request->id);
+
+        $model->delete();
+
+        //
+        return response([
+            'status' => true,
+            'message' => 'Booking canceled successfully'
         ]);
     }
 
@@ -359,11 +398,18 @@ class IndexController extends Controller
             ], 400);
         }
 
-        Ticket::create([
+        $data = [
             'day' => $request->day,
             'user_id' => $user->id,
             'total' => $request->total
-        ]);
+        ];
+
+        if($request->day != 'all') {
+            $date = Day::where('day', $day)->first()->event_date;
+            $data['event_date'] = $date;
+        }
+
+        Ticket::create($data);
 
         //
         return response([

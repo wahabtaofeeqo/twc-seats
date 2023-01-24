@@ -10,7 +10,7 @@ class Ticket extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id', 'total', 'day'
+        'user_id', 'total', 'day', 'event_date',
     ];
 
     /**
