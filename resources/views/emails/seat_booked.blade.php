@@ -1,7 +1,11 @@
 <x-mail::message>
-# New Booking!
+# Hi, {{$user->name}}
 
-There is a new seat booking by {{$user->name}} and payment of #{{$body->amount}} has been made.
+<div>
+    <img src="{{asset('assets/images/f.jpeg')}}" alt="LPC" width="100%" height="250px">
+</div>
+
+Your seat has been booked successfully.
 
 Thanks,<br>
 {{ config('app.name') }}

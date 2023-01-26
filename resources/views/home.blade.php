@@ -79,8 +79,8 @@
                                             <button class="btn btn-sm btn-success">Confirmed</button>
                                         @else
                                             <button class="btn btn-sm btn-info confirm" data-id="{{$row->id}}" data-type="booking">Confirm</button>
-                                            <button class="btn btn-sm btn-danger cancel" data-id="{{$row->id}}" data-type="booking">Cancel</button>
                                         @endif
+                                        <button class="btn btn-sm btn-danger cancel" data-id="{{$row->id}}" data-type="booking">Cancel</button>
                                     </td>
                                 </tr>
                             @endforeach

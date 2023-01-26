@@ -15,12 +15,6 @@ use App\Mail\SeatBooked;
 
 class IndexController extends Controller
 {
-
-    private $firstDay = 7;
-    private $bookableDays = [
-        7, 8, 13, 14, 19, 20
-    ];
-
     public function index()
     {
         return view('welcome');
@@ -28,49 +22,19 @@ class IndexController extends Controller
 
     public function seats(Request $request)
     {
-        $day = $request->day ?? $this->firstDay;
-
-        // Check seats
         $seats = Seat::all();
-
-        // if($seats->isEmpty() || $seats->count() < 62) {
-        //     $total = 62 - $seats->count();
-        //     for ($i = 0; $i < $total; $i++) {
-        //         Seat::create([
-        //             'day' => $day,
-        //             'event_date' => date('Y-m-d')
-        //         ]);
-        //     }
-
-        //     // Reload
-        //     $seats = Seat::with('user')->whereDate('event_date', date('Y-m-d'))
-        //         ->orWhere('day', $day)->orderBy('id', 'asc')->get();
-        // }
+        $model = Day::whereDate('event_date', '>=', date('Y-m-d'))->first();
 
         //
-        // $bookeds = Seat::where('user_id', '!=', null)
-        //     ->where(function($q) use($day) {
-        //         $q->whereDate('event_date', date('Y-m-d'))
-        //             ->orWhere('day', $day);
-        //     })->count();
-
-        $available = 62;
-        $model = Day::where('day', $day)->first();
-        if($model) $available -= $model->total;
-
-        // if ($model) $available = 62 - $model->total;
-        // $bookeds = Booked::with('user')->where('day', $day)
-        //     ->orWhere('day', 'all')->get();
-
-        //
-        $bookedSeats = Booked::where('day', $day)
-            ->orWhere('day', 'all')->pluck('seat_id')->toArray();
+        $bookedSeats = [];
+        if($model) {
+            Booked::where('day', $model->day)
+                ->orWhere('day', 'all')->pluck('seat_id')->toArray();
+        }
 
         return view('index', [
-            'day' => $day,
             'seats' => $seats,
-            'bookeds' => $bookedSeats,
-            'available' => $available
+            'bookeds' => $bookedSeats
         ]);
     }
 
@@ -172,6 +136,19 @@ class IndexController extends Controller
                 $reason = 'This user already booked for Day: ' . $currentDay;
                 break;
             }
+
+            // Check if seat has been booked for that day
+            $hasBooked = Booked::where('seat_id', $request->seat_id)
+                ->where(function($q) use ($value) {
+                    $q->where('day', $value)
+                        ->orWhere('day', 'all');
+                })->exists();
+
+            if($hasBooked) {
+                $notAvailable = true;
+                $reason = 'This seat has already been booked for Day: ' . $currentDay;
+                break;
+            }
         }
 
         if($notAvailable) {
@@ -203,15 +180,6 @@ class IndexController extends Controller
 
     private function doBook($day, $user, $data) {
 
-        // //
-        // $data = [
-        //     'day' => $day,
-        //     'seat_id' => $seat,
-        //     'user_id' => $user->id,
-        // ];
-
-        // if($type) $data['type'] = $type;
-
         $data['user_id'] = $user->id;
         if($day != 'all') {
             $date = Day::where('day', $day)->first()->event_date;
@@ -227,26 +195,12 @@ class IndexController extends Controller
             foreach ($models as $key => $model) {
                 $model->total = $model->total + 1;
                 $model->save();
-
-                //
-                // $seat = Seat::firstOrCreate([
-                //     'day' => $model->day
-                // ]);
-                // $seat->user_id = $user->id;
-                // $seat->save();
             }
         }
         else {
             $model = Day::where('day', $day)->first();
             $model->total = $model->total + 1;
             $model->save();
-
-            //
-            // $seat = Seat::firstOrCreate([
-            //     'day' => $model->day
-            // ]);
-            // $seat->user_id = $user->id;
-            // $seat->save();
         }
     }
 
@@ -316,6 +270,19 @@ class IndexController extends Controller
                 $reason = 'This user already booked for Day: ' . $currentDay;
                 break;
             }
+
+            // Check if seat has been booked for that day
+            $hasBooked = Booked::where('seat_id', $request->seat_id)
+                ->where(function($q) use ($value) {
+                    $q->where('day', $value)
+                        ->orWhere('day', 'all');
+                })->exists();
+
+            if($hasBooked) {
+                $notAvailable = true;
+                $reason = 'This seat has already been booked for Day: ' . $currentDay;
+                break;
+            }
         }
 
         if($notAvailable) {
@@ -373,6 +340,16 @@ class IndexController extends Controller
 
         $model->confirmed = true;
         $model->save();
+
+        if($request->type == 'booking') {
+            $user = User::find($model->user_id);
+            try {
+                Mail::to($user)->send(new SeatBooked($user, $model));
+            }
+            catch (\Exception $e) {
+                //throw $th;
+            }
+        }
 
         //
         return response([
