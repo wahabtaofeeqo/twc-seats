@@ -8,7 +8,7 @@
             </div>
             <form id="buyForm">
                 <div class="modal-body">
-                    <p class="text-danger">A seat cost the sum of ₦35,000</p>
+                    <p class="text-danger">A seat cost the sum of <span id="seat-price"></span></p>
                     <div class="mb-4">
                         <input type="text" id="user-name" name="name" required class="form-control rounded-0" placeholder="Name">
                     </div>
@@ -29,6 +29,7 @@
 
                     <input type="hidden" id="seat-type" name="type">
                     <input type="hidden" id="seat-id" name="seat_id">
+                    <input type="hidden" id="seat-color" name="color">
                     <input type="hidden" id="seat-number" name="seat_number">
                 </div>
 

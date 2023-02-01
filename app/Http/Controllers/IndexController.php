@@ -20,6 +20,25 @@ class IndexController extends Controller
         return view('welcome');
     }
 
+    public function tables(Request $request)
+    {
+        $bookedCouchs = [];
+        $model = Day::whereDate('event_date', '>=', date('Y-m-d'))->first();
+
+        if($model) {
+            $bookedCouchs = Booked::where('type', 'couch')
+                ->where(function($q) use ($model) {
+                    $q->where('day', 'all')
+                        ->orWhere('day', $model->day);
+                })->pluck('seat_number')->toArray();
+        }
+
+        //
+        return view('table', [
+            'couch' => $bookedCouchs,
+        ]);
+    }
+
     public function seats(Request $request)
     {
         $seats = Seat::all();
@@ -27,14 +46,24 @@ class IndexController extends Controller
 
         //
         $bookedSeats = [];
+        $bookedCouchs = [];
+
         if($model) {
-            Booked::where('day', $model->day)
+            $bookedSeats = Booked::where('day', $model->day)
                 ->orWhere('day', 'all')->pluck('seat_id')->toArray();
+
+            $bookedCouchs = Booked::where('type', 'couch')
+                ->where(function($q) use ($model) {
+                    $q->where('day', 'all')
+                        ->orWhere('day', $model->day);
+                })->pluck('seat_number')->toArray();
         }
 
+        //
         return view('index', [
             'seats' => $seats,
-            'bookeds' => $bookedSeats
+            'couch' => $bookedCouchs,
+            'bookeds' => $bookedSeats,
         ]);
     }
 
@@ -110,7 +139,9 @@ class IndexController extends Controller
         $notAvailable = false;
         $days = $request->days;
 
+        $type = $request->type ?? 'chair';
         $isAll = in_array('all', $days);
+
         foreach ($days as $key => $value) {
             $currentDay = $value;
 
@@ -129,7 +160,7 @@ class IndexController extends Controller
                 ->where(function($q) use ($value) {
                     $q->where('day', $value)
                         ->orWhere('day', 'all');
-                })->exists();
+                })->where('type', $type)->exists();
 
             if($hasBooked) {
                 $notAvailable = true;
@@ -142,7 +173,7 @@ class IndexController extends Controller
                 ->where(function($q) use ($value) {
                     $q->where('day', $value)
                         ->orWhere('day', 'all');
-                })->exists();
+                })->where('type', $type)->exists();
 
             if($hasBooked) {
                 $notAvailable = true;
@@ -245,6 +276,7 @@ class IndexController extends Controller
         $days = $request->days;
 
         $isAll = in_array('all', $days);
+        $type = $request->type ?? 'chair';
         foreach ($days as $key => $value) {
             $currentDay = $value;
 
@@ -263,7 +295,7 @@ class IndexController extends Controller
                 ->where(function($q) use ($value) {
                     $q->where('day', $value)
                         ->orWhere('day', 'all');
-                })->exists();
+                })->where('type', $type)->exists();
 
             if($hasBooked) {
                 $notAvailable = true;
@@ -276,7 +308,7 @@ class IndexController extends Controller
                 ->where(function($q) use ($value) {
                     $q->where('day', $value)
                         ->orWhere('day', 'all');
-                })->exists();
+                })->where('type', $type)->exists();
 
             if($hasBooked) {
                 $notAvailable = true;

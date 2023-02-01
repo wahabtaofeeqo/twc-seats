@@ -1,12 +1,34 @@
 (function($) {
     $(".available").click(function(e) {
+
         let type = $(this).attr('data-type');
         let seatId = $(this).attr('data-id');
+        let color = $(this).attr('data-color');
         let number = $(this).attr('data-number');
 
         $('#seat-id').val(seatId);
         $('#seat-type').val(type);
+        $('#seat-color').val(color);
         $('#seat-number').val(number);
+        $('#seat-price').text('₦25,000');
+
+        //
+        $("#formModal").modal('show');
+    })
+
+    // Couch
+    $(".couch").click(function(e) {
+
+        let type = $(this).attr('data-type');
+        let seatId = $(this).attr('data-id');
+        let color = $(this).attr('data-color');
+        let number = $(this).attr('data-number');
+
+        $('#seat-id').val(seatId);
+        $('#seat-type').val(type);
+        $('#seat-color').val(color);
+        $('#seat-number').val(number);
+        $('#seat-price').text('₦100,000');
 
         //
         $("#formModal").modal('show');
@@ -19,6 +41,7 @@
     $(".confirm").click(function(e) {
         let id = $(this).attr('data-id');
         let type = $(this).attr('data-type');
+        toastr.info('Please wait...')
 
         if(confirm('Do you wish to continue')) {
             axios.post(`/api/approve`, {id, type})
@@ -33,10 +56,10 @@
         }
     })
 
-
     $(".cancel").click(function(e) {
         let id = $(this).attr('data-id');
         let type = $(this).attr('data-type');
+        toastr.info('Please wait...')
 
         if(confirm('Do you wish to continue?')) {
             axios.post(`/api/cancel`, {id, type})
@@ -58,6 +81,7 @@
         axios.post(`/api/confirm`, data)
             .then(res => {
                 toastr.success(res.data.message)
+                window.location.reload();
             })
             .catch(e => {
                 let message = e.response?.data?.message || e.message

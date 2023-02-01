@@ -1,12 +1,12 @@
 <x-mail::message>
-# Hi, {{$user->name}}
+# Dear {{$user->name}}
 
 <div>
     <img src="{{asset('assets/images/f.jpeg')}}" alt="LPC" width="100%" height="250px">
 </div>
 
-Your seat has been booked successfully.
+This is a confirmation of your booking on {{$body->event_date}} Seat number: {{$body->seat_number}} for the members hospitality viewing Terrace.
 
-Thanks,<br>
+See you soon!<br>
 {{ config('app.name') }}
 </x-mail::message>

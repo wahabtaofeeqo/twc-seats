@@ -11,7 +11,7 @@ class Booked extends Model
 
     protected $fillable = [
         'day', 'user_id', 'event_date',
-        'type', 'seat_id', 'seat_number'
+        'type', 'seat_id', 'seat_number', 'color'
     ];
 
     /**

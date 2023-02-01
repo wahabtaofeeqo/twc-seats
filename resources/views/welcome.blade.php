@@ -10,7 +10,7 @@
             </p>
             <a href="/seats" class="btn btn-lg btn-danger mb-4 me-2">Book a seat</a>
             <button class="btn btn-lg btn-light mb-4 me-2 buy-ticket">Buy Tickets</button>
-            <button class="btn btn-lg btn-danger mb-4">Book Table</button>
+            <a href="/tables" class="btn btn-lg btn-danger mb-4">Book Table</a>
         </div>
     </div>
 </div>

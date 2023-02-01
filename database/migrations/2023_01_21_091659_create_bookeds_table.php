@@ -20,7 +20,8 @@ return new class extends Migration
             $table->bigInteger('user_id')->unsigned();
             $table->bigInteger('seat_id')->unsigned()->nullable();
             $table->integer('seat_number')->unsigned()->nullable();
-            $table->enum('type', ['white', 'blue'])->default('blue');
+            $table->enum('type', ['chair', 'couch'])->default('chair');
+            $table->enum('color', ['white', 'blue'])->default('blue');
             $table->boolean('confirmed')->nullable()->default(false);
             $table->foreign('seat_id')->references('id')->on('seats')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

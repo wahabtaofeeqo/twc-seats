@@ -72,7 +72,13 @@
                                             $row->event_date ? $row->event_date : $row->day
                                         }}
                                     </td>
-                                    <td>{{$row->type}}</td>
+                                    <td>
+                                        @if ($row->type == 'couch')
+                                            <i class="fa-solid fa-couch"></i>
+                                        @else
+                                            <i class="fa-solid fa-chair"></i>
+                                        @endif
+                                    </td>
                                     <td>{{$row->seat_number}}</td>
                                     <td>
                                         @if ($row->confirmed)
