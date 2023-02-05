@@ -9,7 +9,15 @@
             <p class="mb-5 text-white"> The Lagos Polo Club the premier sporting Polo Club in Nigeria, with an exceptional calibre of members.</p>
 
             <div class="mb-4">
-                <img src="{{asset('assets/images/f.jpeg')}}" class="rounded" style="width: 100%; height: 400px;" alt="">
+                <img src="{{asset('assets/images/f.jpeg')}}" class="rounded d-none d-md-block" style="width: 100%; height: 400px;" alt="">
+                <div class="card d-md-none border-dark">
+                    <img src="{{asset('assets/images/plan2.jpeg')}}" class="card-img-top" style="width: 100%; height: 400px;" alt="">
+                    <div class="card-body">
+                        <p class="mb-0">
+                            <strong>Floor Plan</strong>
+                        </p>
+                    </div>
+                </div>
             </div>
 
             <div class="container-fluid">
