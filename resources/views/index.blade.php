@@ -5,11 +5,13 @@
     <div class="py-5">
         <div class="container">
 
-            <h4 class="text-white"><strong>Lagos Polo Club (2023)</strong></h4>
-            <p class="mb-5 text-white"> The Lagos Polo Club the premier sporting Polo Club in Nigeria, with an exceptional calibre of members.</p>
+            <h4 class="text-white"><strong>Lagos Polo Club ({{date('Y')}})</strong></h4>
+            <p class="mb-5 text-white">
+                Join us in celebrating 120 years of Polo, with an exceptional calibre of members, at The Lagos Polo Club the premier sporting Polo Club in Nigeria.
+            </p>
 
             <div class="mb-4">
-                <img src="{{asset('assets/images/f.jpeg')}}" class="rounded d-none d-md-block" style="width: 100%; height: 400px;" alt="">
+                <img src="{{asset('assets/images/seat.jpeg')}}" class="rounded d-none d-md-block" style="width: 100%; height: 400px;" alt="">
                 <div class="card d-md-none border-dark">
                     <img src="{{asset('assets/images/plan2.jpeg')}}" class="card-img-top" style="width: 100%; height: 400px;" alt="">
                     <div class="card-body">

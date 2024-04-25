@@ -1,4 +1,25 @@
-<!-- Modal -->
+@php
+    $dates = [
+        "all" => 'All Days',
+        '1' => 'Jan 26th ' . date('Y'),
+        '2' => 'Jan 27th ' . date('Y'),
+        '3' => 'Jan 28th ' . date('Y'),
+
+        '4' => 'Feb 2nd ' . date('Y'),
+        '5' => 'Feb 3rd ' . date('Y'),
+        '6' => 'Feb 4th ' . date('Y'),
+
+        '7' => 'Feb 9th ' . date('Y'),
+        '8' => 'Feb 10th ' . date('Y'),
+        '9' => 'Feb 11th ' . date('Y'),
+
+        '10' => 'Feb 16th ' . date('Y'),
+        '11' => 'Feb 17th ' . date('Y'),
+        '12' => 'Feb 18th ' . date('Y'),
+    ]
+@endphp
+
+<!-- Seat Modal -->
 <div class="modal fade" id="formModal" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -18,13 +39,9 @@
 
                     <select name="days[]" id="user-days" required class="form-control" multiple>
                         <option value="">Select day</option>
-                        <option value="all">All Days</option>
-                        <option value="7">Feb 4th, 2023</option>
-                        <option value="8">Feb 5th, 2023</option>
-                        <option value="13">Feb 11th, 2023</option>
-                        <option value="14">Feb 12th, 2023</option>
-                        <option value="19">Feb 18th, 2023</option>
-                        <option value="20">Feb 19th, 2023</option>
+                        @foreach ($dates as $key => $value)
+                            <option value="{{$key}}">{{$value}}</option>
+                        @endforeach
                     </select>
 
                     <input type="hidden" id="seat-type" name="type">
@@ -34,8 +51,8 @@
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button class="btn btn-success">Send Booking</button>
+                    <button type="button" class="btn btn-secondary rounded-0" data-bs-dismiss="modal">Close</button>
+                    <button class="btn btn-primary rounded-0">Send Booking</button>
                 </div>
             </form>
         </div>
@@ -65,18 +82,15 @@
 
                     <select name="day" required class="form-control">
                         <option value="">Select day</option>
-                        <option value="7">Feb 4th, 2023</option>
-                        <option value="8">Feb 5th, 2023</option>
-                        <option value="13">Feb 11th, 2023</option>
-                        <option value="14">Feb 12th, 2023</option>
-                        <option value="19">Feb 19th, 2023</option>
-                        <option value="20">Feb 19th, 2023</option>
+                        @foreach ($dates as $key => $value)
+                            <option value="{{$key}}">{{$value}}</option>
+                        @endforeach
                     </select>
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button class="btn btn-success">Continute</button>
+                    <button type="button" class="btn btn-secondary rounded-0" data-bs-dismiss="modal">Close</button>
+                    <button class="btn btn-primary rounded-0">Continute</button>
                 </div>
             </form>
         </div>
@@ -101,19 +115,15 @@
                     </div>
                     <select name="days[]" id="user-days" required class="form-control" multiple>
                         <option value="">Select day</option>
-                        <option value="all">All Days</option>
-                        <option value="7">Feb 4th, 2023</option>
-                        <option value="8">Feb 5th, 2023</option>
-                        <option value="13">Feb 11th, 2023</option>
-                        <option value="14">Feb 12th, 2023</option>
-                        <option value="19">Feb 18th, 2023</option>
-                        <option value="20">Feb 19th, 2023</option>
+                        @foreach ($dates as $key => $value)
+                            <option value="{{$key}}">{{$value}}</option>
+                        @endforeach
                     </select>
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button class="btn btn-success px-5">Book</button>
+                    <button type="button" class="btn btn-secondary rounded-0" data-bs-dismiss="modal">Close</button>
+                    <button class="btn btn-primary px-5 rounded-0">Book</button>
                 </div>
             </form>
         </div>

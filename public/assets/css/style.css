@@ -3,7 +3,7 @@ html, body {
 }
 
 .bg-cover {
-    background-image: url('../images/polo1.jpeg');
+    background-image: url('../images/banner.jpeg');
     background-size: 100% 100%;
     background-attachment: fixed;
 }

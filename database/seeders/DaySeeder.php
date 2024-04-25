@@ -16,35 +16,96 @@ class DaySeeder extends Seeder
      */
     public function run()
     {
+        // $data = [
+        //     [
+        //         'day' => 7,
+        //         'event_date' =>  Carbon::parse('2023-02-04')
+        //     ],
+        //     [
+        //         'day' => 8,
+        //         'event_date' =>  Carbon::parse('2023-02-05')
+        //     ],
+        //     [
+        //         'day' => 13,
+        //         'event_date' =>  Carbon::parse('2023-02-11')
+        //     ],
+        //     [
+        //         'day' => 14,
+        //         'event_date' =>  Carbon::parse('2023-02-12')
+        //     ],
+        //     [
+        //         'day' => 19,
+        //         'event_date' =>  Carbon::parse('2023-02-18')
+        //     ],
+        //     [
+        //         'day' => 20,
+        //         'event_date' =>  Carbon::parse('2023-02-19')
+        //     ]
+        // ];
+
         $data = [
             [
+                'day' => 1,
+                'event_date' =>  Carbon::parse('2024-01-26')
+            ],
+            [
+                'day' => 2,
+                'event_date' =>  Carbon::parse('2024-01-27')
+            ],
+            [
+                'day' => 3,
+                'event_date' =>  Carbon::parse('2024-01-28')
+            ],
+
+            [
+                'day' => 4,
+                'event_date' =>  Carbon::parse('2024-02-02')
+            ],
+            [
+                'day' => 5,
+                'event_date' =>  Carbon::parse('2024-02-03')
+            ],
+            [
+                'day' => 6,
+                'event_date' =>  Carbon::parse('2024-02-04')
+            ],
+
+            [
                 'day' => 7,
-                'event_date' =>  Carbon::parse('2023-02-04')
+                'event_date' =>  Carbon::parse('2024-02-09')
             ],
             [
                 'day' => 8,
-                'event_date' =>  Carbon::parse('2023-02-05')
+                'event_date' =>  Carbon::parse('2024-02-10')
             ],
             [
-                'day' => 13,
-                'event_date' =>  Carbon::parse('2023-02-11')
+                'day' => 9,
+                'event_date' =>  Carbon::parse('2024-02-11')
+            ],
+
+            [
+                'day' => 10,
+                'event_date' =>  Carbon::parse('2024-02-16')
             ],
             [
-                'day' => 14,
-                'event_date' =>  Carbon::parse('2023-02-12')
+                'day' => 11,
+                'event_date' =>  Carbon::parse('2024-02-17')
             ],
             [
-                'day' => 19,
-                'event_date' =>  Carbon::parse('2023-02-18')
-            ],
-            [
-                'day' => 20,
-                'event_date' =>  Carbon::parse('2023-02-19')
+                'day' => 12,
+                'event_date' =>  Carbon::parse('2024-02-18')
             ]
         ];
 
         foreach ($data as $key => $value) {
-            Day::create($value);
+            $model = Day::where('day', $value['day'])
+                ->whereYear('event_date', date('Y'))->first();
+
+            if($model) {
+                $model->fill($value);
+                $model->save();
+            }
+            else Day::create($value);
         }
 
         // $counter = 0;

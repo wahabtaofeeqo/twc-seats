@@ -139,13 +139,14 @@ class IndexController extends Controller
         $notAvailable = false;
         $days = $request->days;
 
-        $type = $request->type ?? 'chair';
         $isAll = in_array('all', $days);
+        $type = $request->type ?? 'chair';
 
         foreach ($days as $key => $value) {
             $currentDay = $value;
 
             // Check day
+            // Check bookings for the day
             if($value != 'all') {
                 $day = Day::where('day', $value)->first();
                 if($day->total >= 62) {
@@ -213,31 +214,41 @@ class IndexController extends Controller
 
         $data['user_id'] = $user->id;
         if($day != 'all') {
-            $date = Day::where('day', $day)->first()->event_date;
+            $date = Day::where('day', $day)
+                ->whereYear('event_date', date('Y'))->first()->event_date;
             $data['event_date'] = $date;
         }
 
         //
-        Booked::create($data);
+        $book = Booked::create($data);
 
         // Update Day
         if($day == 'all') {
-            $models = Day::all();
+            $models = Day::whereYear('event_date', date('Y'))->get();
             foreach ($models as $key => $model) {
                 $model->total = $model->total + 1;
                 $model->save();
             }
         }
         else {
-            $model = Day::where('day', $day)->first();
+            $model = Day::where('day', $day)
+                ->whereYear('event_date', date('Y'))->first();
             $model->total = $model->total + 1;
             $model->save();
         }
+
+        // Send Mail
+        // try {
+        //     Mail::send(new SeatBooked($user, $book));
+        // }
+        // catch (\Exception $e) {}
     }
 
     public function dash()
     {
-        $bookings = Booked::with('user')->paginate(20);
+        $bookings = Booked::with('user')
+            ->latest()->paginate(20);
+
         $days = Day::all();
 
         //
@@ -277,12 +288,15 @@ class IndexController extends Controller
 
         $isAll = in_array('all', $days);
         $type = $request->type ?? 'chair';
+
         foreach ($days as $key => $value) {
             $currentDay = $value;
 
             // Check day
             if($value != 'all') {
-                $day = Day::where('day', $value)->first();
+                $day = Day::where('day', $value)
+                    ->whereYear('event_date', date('Y'))->first();
+
                 if($day->total >= 62) {
                     $notAvailable = true;
                     $reason = 'No Seat for booking on Day: ' . $currentDay;
@@ -295,7 +309,8 @@ class IndexController extends Controller
                 ->where(function($q) use ($value) {
                     $q->where('day', $value)
                         ->orWhere('day', 'all');
-                })->where('type', $type)->exists();
+                })->where('type', $type)
+                ->whereYear('created_at', date('Y'))->exists();
 
             if($hasBooked) {
                 $notAvailable = true;
@@ -305,10 +320,11 @@ class IndexController extends Controller
 
             // Check if seat has been booked for that day
             $hasBooked = Booked::where('seat_id', $request->seat_id)
-                ->where(function($q) use ($value) {
-                    $q->where('day', $value)
+                ->where(function($query) use ($value) {
+                    $query->where('day', $value)
                         ->orWhere('day', 'all');
-                })->where('type', $type)->exists();
+                })->where('type', $type)
+                ->whereYear('created_at', date('Y'))->exists();
 
             if($hasBooked) {
                 $notAvailable = true;
@@ -320,8 +336,7 @@ class IndexController extends Controller
         if($notAvailable) {
             return response([
                 'status' => false,
-                'message' => $reason
-            ], 400);
+                'message' => $reason], 400);
         }
 
         // Log Booking
@@ -379,7 +394,8 @@ class IndexController extends Controller
                 Mail::to($user)->send(new SeatBooked($user, $model));
             }
             catch (\Exception $e) {
-                //throw $th;
+                // throw $th;
+                // info($e->getMessage());
             }
         }
 
