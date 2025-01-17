@@ -1,6 +1,9 @@
 <?php
 
+use App\Http\Controllers\ProfileController;
+use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,12 +16,33 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+// Route::get('/', function () {
+//     return Inertia::render('Welcome', [
+//         'canLogin' => Route::has('login'),
+//         'canRegister' => Route::has('register'),
+//         'laravelVersion' => Application::VERSION,
+//         'phpVersion' => PHP_VERSION,
+//     ]);
+// });
+
 Route::get('/', 'IndexController@index');
 Route::get('/login', 'LoginController@login');
 Route::get('/seats', 'IndexController@seats')->name('seats');
 Route::get('/tables', 'IndexController@tables')->name('seats');
-Route::get('/tickets', 'IndexController@tickets')->name('tickets')->middleware('auth');
-Route::get('/dashboard', 'IndexController@dash')->name('dashboard')->middleware('auth');
-Route::post('/login', 'LoginController@authenticate')->name('login');
+Route::get('/tickets', 'PagesController@tickets')->name('tickets');
 
+// Route::post('/login', 'LoginController@authenticate')->name('login');
+// Route::get('/dashboard', function () {
+//     return Inertia::render('Dashboard');
+// })->middleware(['auth', 'verified'])->name('dashboard');
 
+Route::group(['prefix' => 'dashboard', 'middleware' => ['auth']], function () {
+    Route::get('/tickets', 'IndexController@tickets')->name('tickets');
+    Route::get('/dashboard', 'IndexController@dash')->name('dashboard');
+
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+require __DIR__.'/auth.php';

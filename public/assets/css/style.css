@@ -46,10 +46,55 @@ html, body {
     font-size: 5em;
     text-transform: capitalize;
     font-weight: bold;
+    background: linear-gradient(#812DE2, #812DE2);
+    /* background: -webkit-linear-gradient(#eee, #333); */
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 @media screen and (max-width: 768px) {
     .title {
         font-size: xx-large
+    }
+}
+
+.border-grad {
+    border-image: linear-gradient(to right, #812DE2, #812DE2);
+    border-width: 2px;
+    background-color: transparent;
+    border-image-slice: 1;
+    border-color: transparent;
+}
+
+.border-d {
+    border: 3px solid transparent;
+    border-image: linear-gradient(to right, #812DE2, #812DE2);
+    border-image-slice: 1;
+    text-decoration: none;
+}
+
+.gridd {
+    display: grid;
+    justify-items: center;
+    align-items: center;
+    grid-template-columns: auto auto auto auto
+}
+
+.gridd h4 {
+    font-weight: 900;
+    color: #040273;
+    text-transform: uppercase;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+.gridd p {
+    color: black;
+    font-size: 18px;
+    margin-bottom: 0;
+}
+
+@media screen and (max-width: 768px) {
+    .gridd {
+        grid-template-columns: auto auto;
     }
 }

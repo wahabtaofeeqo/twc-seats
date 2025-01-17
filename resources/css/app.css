@@ -1,0 +1,58 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.text-color {
+    color: #A303A0;
+}
+
+.text-light {
+    color: #DF6951;
+}
+
+.bg-color {
+    background-color: #A303A0;
+}
+
+.decore {
+    background-image: url(/images/decore.png);
+    background-position: top right;
+    background-repeat: no-repeat;
+}
+
+@media screen and (max-width: 600px) {
+    .cover {
+        background-image: url(/images/warr.jpeg);
+        background-size: cover;
+        background-repeat: no-repeat;
+    }
+}
+
+.overlay {
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+@media screen and (min-width: 768px) {
+    .overlay {
+       background-color: transparent;
+    }
+}
+
+.main {
+    background-image: url(/images/warr.jpeg);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+@media screen and (min-width: 768px) {
+    .title {
+        color: #000;
+        font-family: Inter Tight;
+        font-size: 140px;
+        font-style: normal;
+        font-weight: 600;
+        line-height: normal;
+        letter-spacing: 7px;
+    }
+}
