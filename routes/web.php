@@ -30,6 +30,8 @@ Route::get('/login', 'LoginController@login');
 Route::get('/seats', 'IndexController@seats')->name('seats');
 Route::get('/tables', 'IndexController@tables')->name('seats');
 Route::get('/tickets', 'PagesController@tickets')->name('tickets');
+Route::post('/bookings', 'PaymentController@init');
+Route::get('/bookings/verification/{id}', 'PagesController@booked');
 
 // Route::post('/login', 'LoginController@authenticate')->name('login');
 // Route::get('/dashboard', function () {

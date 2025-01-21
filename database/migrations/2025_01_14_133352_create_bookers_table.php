@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('email');
             $table->string('phone')->nullable();
+            $table->boolean('is_buyer')->nullable()->default(false);
             $table->boolean('confirmed')->nullable()->default(false); // To flag non-completed booking process
             $table->timestamps();
         });

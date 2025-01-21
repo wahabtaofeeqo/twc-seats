@@ -46,54 +46,54 @@ class DaySeeder extends Seeder
         $data = [
             [
                 'day' => 1,
-                'event_date' =>  Carbon::parse('2024-01-26')
+                'event_date' =>  Carbon::parse('2025-01-26')
             ],
             [
                 'day' => 2,
-                'event_date' =>  Carbon::parse('2024-01-27')
+                'event_date' =>  Carbon::parse('2025-01-27')
             ],
             [
                 'day' => 3,
-                'event_date' =>  Carbon::parse('2024-01-28')
+                'event_date' =>  Carbon::parse('2025-01-28')
             ],
 
             [
                 'day' => 4,
-                'event_date' =>  Carbon::parse('2024-02-02')
+                'event_date' =>  Carbon::parse('2025-02-02')
             ],
             [
                 'day' => 5,
-                'event_date' =>  Carbon::parse('2024-02-03')
+                'event_date' =>  Carbon::parse('2025-02-03')
             ],
             [
                 'day' => 6,
-                'event_date' =>  Carbon::parse('2024-02-04')
+                'event_date' =>  Carbon::parse('2025-02-04')
             ],
 
             [
                 'day' => 7,
-                'event_date' =>  Carbon::parse('2024-02-09')
+                'event_date' =>  Carbon::parse('2025-02-09')
             ],
             [
                 'day' => 8,
-                'event_date' =>  Carbon::parse('2024-02-10')
+                'event_date' =>  Carbon::parse('2025-02-10')
             ],
             [
                 'day' => 9,
-                'event_date' =>  Carbon::parse('2024-02-11')
+                'event_date' =>  Carbon::parse('2025-02-11')
             ],
 
             [
                 'day' => 10,
-                'event_date' =>  Carbon::parse('2024-02-16')
+                'event_date' =>  Carbon::parse('2025-02-16')
             ],
             [
                 'day' => 11,
-                'event_date' =>  Carbon::parse('2024-02-17')
+                'event_date' =>  Carbon::parse('2025-02-17')
             ],
             [
                 'day' => 12,
-                'event_date' =>  Carbon::parse('2024-02-18')
+                'event_date' =>  Carbon::parse('2025-02-18')
             ]
         ];
 

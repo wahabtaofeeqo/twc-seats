@@ -21,4 +21,5 @@ Route::post('book', 'IndexController@book');
 Route::post('tickets', 'IndexController@ticket');
 Route::post('confirm', 'IndexController@confirm');
 Route::post('verify/{ref}', 'IndexController@store');
+Route::get('payments/verify/{id}', 'PaymentController@verify');
 

@@ -9,6 +9,6 @@ return [
     |
     */
 
-    'public' => env('PAYSTACK_PUBLIC_KEY', ''),
-    'secret' => env('PAYSTACK_SECRET_KEY', '')
+    'pub' => env('PAYSTACK_PUBLIC_KEY', ''),
+    'sec' => env('PAYSTACK_SECRET_KEY', '')
 ];

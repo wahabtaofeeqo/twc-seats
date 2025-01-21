@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('tx_id');
             $table->string('tx_ref');
-            $table->float('amount')->default(0);
+            $table->double('amount')->default(0);
             $table->bigInteger('booker_id')->nullable()->unsigned();
             $table->foreign('booker_id')->references('id')->on('bookers')->onDelete('cascade');
             $table->timestamps();

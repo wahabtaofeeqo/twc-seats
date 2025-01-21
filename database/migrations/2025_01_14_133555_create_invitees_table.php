@@ -15,6 +15,8 @@ return new class extends Migration
     {
         Schema::create('invitees', function (Blueprint $table) {
             $table->id();
+            $table->bigInteger('booker_id')->unsigned();
+            $table->bigInteger('inviter_id')->unsigned()->nullable();
             $table->timestamps();
         });
     }

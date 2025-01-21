@@ -15,11 +15,11 @@ return new class extends Migration
     {
         Schema::create('tickets', function (Blueprint $table) {
             $table->id();
-            $table->integer('day')->unsigned();
             $table->date('event_date')->nullable();
-            $table->bigInteger('user_id')->unsigned()->unique();
+            $table->integer('day')->unsigned()->nullable();
             $table->boolean('confirmed')->nullable()->default(false);
             $table->integer('total')->unsigned()->nullable()->default(0);
+            $table->bigInteger('user_id')->unsigned()->unique()->nullable();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
         });

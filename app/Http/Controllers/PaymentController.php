@@ -17,6 +17,7 @@ use App\Mail\QrCode;
 use App\Models\Category;
 use App\Models\Ticket;
 use App\Models\Invitee;
+use Inertia\Inertia;
 
 class PaymentController extends Controller
 {
@@ -33,7 +34,7 @@ class PaymentController extends Controller
         try {
             $randomUUID = Str::uuid();
             $baseUrl = config('app.url');
-            $reference = "Ush_" . Str::random(10) . time();
+            $reference = "Polo_" . Str::random(10) . time();
             $url = "https://api.paystack.co/transaction/initialize";
 
             //
@@ -45,7 +46,6 @@ class PaymentController extends Controller
                 'metadata' => $meta,
                 'callback_url' => $baseUrl . '/bookings/verification/' . $randomUUID
             ]);
-
             if ($response->successful()) return $response->object()->data;
         }
         catch (\Exception $e) {
