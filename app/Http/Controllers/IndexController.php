@@ -8,10 +8,13 @@ use App\Models\Seat;
 use App\Models\User;
 use App\Models\Booked;
 use App\Models\Ticket;
+use App\Models\Booking;
+use App\Models\Category;
 use Http;
 use Auth;
 use Mail;
 use App\Mail\SeatBooked;
+use Inertia\Inertia;
 
 class IndexController extends Controller
 {
@@ -148,7 +151,9 @@ class IndexController extends Controller
             // Check day
             // Check bookings for the day
             if($value != 'all') {
-                $day = Day::where('day', $value)->first();
+                $day = Day::where('day', $value)
+                    ->whereYear('event_date', date('Y'))->first();
+
                 if($day->total >= 62) {
                     $notAvailable = true;
                     $reason = 'No Seat for booking on Day: ' . $currentDay;
@@ -247,31 +252,53 @@ class IndexController extends Controller
     public function dash()
     {
         $bookings = Booked::with('user')
-            ->latest()->paginate(20);
+            ->latest()->paginate(10);
 
         $days = Day::all();
+        $count = Ticket::where('user_id', '!=', null)->count();
 
         //
         return view('home', [
             'days' => $days,
             'bookings' => $bookings,
             'users' => User::count(),
-            'totalTickets' => Ticket::count(),
+            'totalTickets' => $count,
             'totalBookings' => Booked::count()
         ]);
     }
 
     public function tickets()
     {
-        $tickets = Ticket::with('user')->paginate(20);
+        $tickets = Ticket::with('user')
+            ->where('user_id', '!=', null)->paginate(20);
+
+        $count = Ticket::where('user_id', '!=', null)->count();
+
+        $models = Booking::with('booker', 'booker.tickets', 'category')
+            ->latest()->paginate(10);
+
+        $stats = [];
+        $categories = Category::all();
+        foreach ($categories as $key => $value) {
+            $stats[] = [
+                'name' => $value->name,
+                'total' => Booking::where('category_id', $value->id)->count()
+            ];
+        }
 
         //
-        return view('ticket', [
-            'tickets' => $tickets,
-            'users' => User::count(),
-            'totalTickets' => Ticket::count(),
-            'totalBookings' => Booked::count()
+        return Inertia::render('Tickets', [
+            'stats' => $stats,
+            'models' => $models,
         ]);
+
+        //
+        // return view('ticket', [
+        //     'tickets' => $tickets,
+        //     'users' => User::count(),
+        //     'totalTickets' => $count,
+        //     'totalBookings' => Booked::count()
+        // ]);
     }
 
     public function confirm(Request $request)

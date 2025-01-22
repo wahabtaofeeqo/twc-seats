@@ -1,7 +1,7 @@
 @extends('layouts.dash')
 
 @section('content')
-<div class="h-100 bg-light">
+<div class="h-100">
     <div class="container py-3">
 
         <div class="row mb-4">
@@ -40,7 +40,7 @@
             <div class="card-body">
                 <div class="mb-4 d-flex justify-content-between">
                     <h4>Bookings</h4>
-                    <button class="btn btn-info px-4" type="button" data-bs-toggle="modal" data-bs-target="#bookModal">Book Seat</button>
+                    <button class="btn btn-info px-4 text-white" type="button" data-bs-toggle="modal" data-bs-target="#bookModal">Book Seat</button>
                 </div>
                 <div class="table-responsive">
                     <table class="table table-striped">
@@ -53,6 +53,7 @@
                                 <th scope="col">Seat Type</th>
                                 <th scope="col">Seat Number</th>
                                 <th scope="col">Status</th>
+                                <th scope="col">Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -79,13 +80,15 @@
                                             <i class="fa-solid fa-chair"></i>
                                         @endif
                                     </td>
-                                    <td>{{$row->seat_number}}</td>
+                                    <td>{{$row->seat_number || 'NA'}}</td>
                                     <td>
-                                        @if ($row->confirmed)
-                                            <button class="btn btn-sm btn-success">Confirmed</button>
-                                        @else
-                                            <button class="btn btn-sm btn-info confirm" data-id="{{$row->id}}" data-type="booking">Confirm</button>
-                                        @endif
+                                        {{
+                                            $row->confirmed ? 'Confirmed' : 'Pending'
+                                        }}
+                                    </td>
+
+                                    <td>
+                                        <button class="btn btn-sm btn-info confirm text-white" data-id="{{$row->id}}" data-type="booking">Confirm</button>
                                         <button class="btn btn-sm btn-danger cancel" data-id="{{$row->id}}" data-type="booking">Cancel</button>
                                     </td>
                                 </tr>

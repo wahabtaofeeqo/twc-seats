@@ -28,23 +28,26 @@
             }
         </style>
     </head>
-    <body class="antialiased">
+    <body class="antialiased bg-light">
 
         @include('modal')
-        <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <nav class="navbar navbar-expand-lg bg-white h-16">
             <div class="container">
-                <a class="navbar-brand" href="#">Dashboard</a>
+                <a class="navbar-brand d-flex gap-3 align-items-center text-sm" href="{{route('dashboard')}}">
+                    <img src="{{asset('assets/images/polo.jpeg')}}" height="34" width="34">
+                    Dashboard
+                </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
+                    <span class="navbar-toggler-icon"></span>
                 </button>
 
                 <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
-                    <li class="nav-item">
-                    <a class="nav-link" href="/">Home</a>
+                    <li class="nav-item d-none">
+                        <a class="nav-link" href="/">Home</a>
                     </li>
-                    <li class="nav-item">
-                    <a class="nav-link" href="{{route('dashboard')}}">Bookings</a>
+                    <li class="nav-item d-none">
+                        <a class="nav-link" href="{{route('dashboard')}}">Bookings</a>
                     </li>
                     <li class="nav-item">
                     <a class="nav-link active" href="{{route('tickets')}}">Tickets</a>

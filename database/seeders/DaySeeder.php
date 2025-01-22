@@ -43,70 +43,70 @@ class DaySeeder extends Seeder
         //     ]
         // ];
 
-        $data = [
-            [
-                'day' => 1,
-                'event_date' =>  Carbon::parse('2025-01-26')
-            ],
-            [
-                'day' => 2,
-                'event_date' =>  Carbon::parse('2025-01-27')
-            ],
-            [
-                'day' => 3,
-                'event_date' =>  Carbon::parse('2025-01-28')
-            ],
+        // $data = [
+        //     [
+        //         'day' => 1,
+        //         'event_date' =>  Carbon::parse('2025-01-26')
+        //     ],
+        //     [
+        //         'day' => 2,
+        //         'event_date' =>  Carbon::parse('2025-01-27')
+        //     ],
+        //     [
+        //         'day' => 3,
+        //         'event_date' =>  Carbon::parse('2025-01-28')
+        //     ],
 
-            [
-                'day' => 4,
-                'event_date' =>  Carbon::parse('2025-02-02')
-            ],
-            [
-                'day' => 5,
-                'event_date' =>  Carbon::parse('2025-02-03')
-            ],
-            [
-                'day' => 6,
-                'event_date' =>  Carbon::parse('2025-02-04')
-            ],
+        //     [
+        //         'day' => 4,
+        //         'event_date' =>  Carbon::parse('2025-02-02')
+        //     ],
+        //     [
+        //         'day' => 5,
+        //         'event_date' =>  Carbon::parse('2025-02-03')
+        //     ],
+        //     [
+        //         'day' => 6,
+        //         'event_date' =>  Carbon::parse('2025-02-04')
+        //     ],
 
-            [
-                'day' => 7,
-                'event_date' =>  Carbon::parse('2025-02-09')
-            ],
-            [
-                'day' => 8,
-                'event_date' =>  Carbon::parse('2025-02-10')
-            ],
-            [
-                'day' => 9,
-                'event_date' =>  Carbon::parse('2025-02-11')
-            ],
+        //     [
+        //         'day' => 7,
+        //         'event_date' =>  Carbon::parse('2025-02-09')
+        //     ],
+        //     [
+        //         'day' => 8,
+        //         'event_date' =>  Carbon::parse('2025-02-10')
+        //     ],
+        //     [
+        //         'day' => 9,
+        //         'event_date' =>  Carbon::parse('2025-02-11')
+        //     ],
 
-            [
-                'day' => 10,
-                'event_date' =>  Carbon::parse('2025-02-16')
-            ],
-            [
-                'day' => 11,
-                'event_date' =>  Carbon::parse('2025-02-17')
-            ],
-            [
-                'day' => 12,
-                'event_date' =>  Carbon::parse('2025-02-18')
-            ]
-        ];
+        //     [
+        //         'day' => 10,
+        //         'event_date' =>  Carbon::parse('2025-02-16')
+        //     ],
+        //     [
+        //         'day' => 11,
+        //         'event_date' =>  Carbon::parse('2025-02-17')
+        //     ],
+        //     [
+        //         'day' => 12,
+        //         'event_date' =>  Carbon::parse('2025-02-18')
+        //     ]
+        // ];
 
-        foreach ($data as $key => $value) {
-            $model = Day::where('day', $value['day'])
-                ->whereYear('event_date', date('Y'))->first();
+        // foreach ($data as $key => $value) {
+        //     $model = Day::where('day', $value['day'])
+        //         ->whereYear('event_date', date('Y'))->first();
 
-            if($model) {
-                $model->fill($value);
-                $model->save();
-            }
-            else Day::create($value);
-        }
+        //     if($model) {
+        //         $model->fill($value);
+        //         $model->save();
+        //     }
+        //     else Day::create($value);
+        // }
 
         // $counter = 0;
         // for ($i = 0; $i < 23 ; $i++) {
@@ -125,5 +125,33 @@ class DaySeeder extends Seeder
 
         //     if(!$isMonday) $counter++;
         // }
+
+        $dates = [
+            '1' => 'Jan 26th ' . date('Y'),
+            '2' => 'Jan 27th ' . date('Y'),
+            '3' => 'Jan 28th ' . date('Y'),
+
+            '4' => 'Feb 2nd ' . date('Y'),
+            '5' => 'Feb 3rd ' . date('Y'),
+            '6' => 'Feb 4th ' . date('Y'),
+
+            '7' => 'Feb 9th ' . date('Y'),
+            '8' => 'Feb 10th ' . date('Y'),
+            '9' => 'Feb 11th ' . date('Y'),
+
+            '10' => 'Feb 16th ' . date('Y'),
+            '11' => 'Feb 17th ' . date('Y'),
+            '12' => 'Feb 18th ' . date('Y'),
+        ];
+
+        $isCreated = Day::whereYear('event_date', date('Y'))->exists();
+        if(!$isCreated) {
+            foreach ($dates as $key => $value) {
+                Day::create([
+                    'day' => $key,
+                    'event_date' => new Carbon($value)
+                ]);
+            }
+        }
     }
 }

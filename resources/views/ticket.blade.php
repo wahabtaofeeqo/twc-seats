@@ -50,9 +50,9 @@
                                 <th scope="col">#</th>
                                 <th scope="col">Name</th>
                                 <th scope="col">Email</th>
-                                <th scope="col">Day</th>
-                                <th scope="col">Tickets</th>
-                                <th scope="col">Status</th>
+                                <th scope="col" class="hidden">Day</th>
+                                <th scope="col">Total</th>
+                                <th scope="col" class="hidden">Status</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -67,13 +67,13 @@
                                     <td>
                                         {{$row->user->email}}
                                     </td>
-                                    <td>
+                                    <td class="hidden">
                                         {{$row->day}}
                                     </td>
                                     <td>
                                         {{$row->total}}
                                     </td>
-                                    <td>
+                                    <td class="hidden">
                                         @if ($row->confirmed)
                                             <button class="btn btn-sm btn-success">Confirmed</button>
                                         @else

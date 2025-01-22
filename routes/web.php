@@ -29,7 +29,7 @@ Route::get('/', 'IndexController@index');
 Route::get('/login', 'LoginController@login');
 Route::get('/seats', 'IndexController@seats')->name('seats');
 Route::get('/tables', 'IndexController@tables')->name('seats');
-Route::get('/tickets', 'PagesController@tickets')->name('tickets');
+Route::get('/tickets', 'PagesController@tickets')->name('ticket');
 Route::post('/bookings', 'PaymentController@init');
 Route::get('/bookings/verification/{id}', 'PagesController@booked');
 
@@ -39,9 +39,9 @@ Route::get('/bookings/verification/{id}', 'PagesController@booked');
 // })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::group(['prefix' => 'dashboard', 'middleware' => ['auth']], function () {
+    Route::get('/', 'IndexController@dash')->name('dashboard');
     Route::get('/tickets', 'IndexController@tickets')->name('tickets');
-    Route::get('/dashboard', 'IndexController@dash')->name('dashboard');
-
+    Route::get('/export-qr', 'PagesController@exportQr')->name('export');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
