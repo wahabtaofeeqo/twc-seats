@@ -225,7 +225,7 @@ const Ticket = ({categories = [], bookings = []}) => {
                                     return (
                                         <div className="md:flex rounded border mb-10 gap-3 border-red-400" key={index}>
                                             <div className="basis-3/5 p-3">
-                                                <img src={item.image} alt="regular" className="rounded lg:h-64 w-full" />
+                                                <img src="/assets/images/banner25.jpg" alt="regular" className="rounded lg:h-64 w-full" />
                                             </div>
                                             <div className="basis-2/5 p-3 flex flex-col items-between justify-between">
                                                 <div className="mb-6">

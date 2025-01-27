@@ -82,7 +82,7 @@ html, body {
 
 .gridd h4 {
     font-weight: 900;
-    color: #040273;
+    color: #eeeeee;
     text-transform: uppercase;
     font-family: 'Courier New', Courier, monospace;
 }
@@ -93,8 +93,22 @@ html, body {
     margin-bottom: 0;
 }
 
+.oval {
+    width: 500px;
+    height: 500px;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
 @media screen and (max-width: 768px) {
     .gridd {
         grid-template-columns: auto auto;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .oval {
+        width: 400px;
+        height: 400px;
     }
 }

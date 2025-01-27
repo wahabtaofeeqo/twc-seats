@@ -7,8 +7,10 @@ use Str;
 use Http;
 use Hash;
 use Auth;
+use App\Models\Day;
 use App\Models\User;
 use App\Models\Booker;
+use App\Models\Booked;
 use App\Models\Payment;
 use App\Models\Booking;
 use Illuminate\Http\Request;
@@ -44,7 +46,7 @@ class PaymentController extends Controller
                 'currency' => 'NGN',
                 'email' => $email,
                 'metadata' => $meta,
-                'callback_url' => $baseUrl . '/bookings/verification/' . $randomUUID
+                'callback_url' => $baseUrl . 'bookings/verification/' . $randomUUID
             ]);
             if ($response->successful()) return $response->object()->data;
         }
@@ -63,68 +65,34 @@ class PaymentController extends Controller
     {
         $input = $request->all();
         $request->validate([
-            'tickets' => 'array',
-            'invitees' => 'array',
-            'firstname' => 'required|string',
-            'lastname' => 'required|string',
-            'email' => 'required|email',
-            'phone' => 'required|string',
-            'amount' => 'required|integer|min:10',
-            'quantity' => 'required|integer|min:1',
+            'day' => 'required',
+            'name' => 'required|string',
+            'email' => 'required|email'
         ]);
 
-        $user = Auth::user();
-        $amount = $input['amount'];
+        $user = User::firstOrCreate([
+            'email' => $request->email
+        ], ['name' => $request->name]);
 
         // Create Booker Model
-        $name = $input['firstname'] . ' ' . $input['lastname'];
         $booker = Booker::create([
-            'name' => $name,
+            'name' => $user->name,
             'is_buyer' => true,
             'email' => $input['email'],
-            'phone' => $input['phone'],
          ]);
 
         $customer = [
-            'name' => $name,
+            'name' => $user->name,
             'email' => $input['email'],
-            'phone_number' => $input['phone']
         ];
 
         $meta =  [
-            'booker_id' => $booker->id,
-            'quantity' => $input['quantity']
+            'day' => $input['day'],
+            'seat' => $input['seat'],
+            'booker_id' => $booker->id
         ];
 
-        // Save Invitees and Tickets
-        $tickets = $request->tickets;
-        $invitees = $request->invitees;
-
-        // Store Invitees
-        foreach ($invitees as $key => $value) {
-            $model = Booker::create([
-                'email' => $value['email'],
-                'name' => $value['name'],
-            ]);
-
-            Invitee::create([
-                'booker_id' => $model->id,
-                'inviter_id' => $booker->id,
-            ]);
-        }
-
-        // Store Tickets
-        foreach ($tickets as $key => $value) {
-            if($value['total']) {
-                Ticket::create([
-                    'total' => $value['total'],
-                    'booker_id' => $booker->id,
-                    'category_id' => $value['model']['id']
-                ]);
-            }
-        }
-
-        $response = $this->createPayment($amount, $input['email'], $meta);
+        $response = $this->createPayment(25000, $input['email'], $meta);
         if ($response) {
             return Inertia::location($response->authorization_url);
         }
@@ -165,21 +133,31 @@ class PaymentController extends Controller
                     //
                     DB::beginTransaction();
 
-                    $model = null;
-                    $code = $this->genCode();
+                    if($meta->day) {
+                        $input = [
+                            'day' => $meta->day,
+                            'seat_id' => $meta->seat
+                        ];
+                        $user = User::where('email', $booker->email)->first();
+                        $this->doBook($meta->day, $user, $input);
+                    }
+                    else {
+                        $model = null;
+                        $code = $this->genCode();
 
-                   // Get Tickets
-                   $tickets = Ticket::where('booker_id', $booker->id)->get();
-                   $payload = [
-                       'code' => $code,
-                       'confirmed' => true,
-                       'booker_id' => $booker->id,
-                       'category_id' => $tickets[0]->category->id
-                   ];
+                        // Get Tickets
+                        $tickets = Ticket::where('booker_id', $booker->id)->get();
+                        $payload = [
+                            'code' => $code,
+                            'confirmed' => true,
+                            'booker_id' => $booker->id,
+                            'category_id' => $tickets[0]->category->id
+                        ];
 
-                   //
-                   $model = Booking::create($payload);
-                   $this->sendTickets($model, false);
+                        //
+                        $model = Booking::create($payload);
+                        $this->sendTickets($model, false);
+                    }
 
                     // Save payment
                     Payment::create([
@@ -205,6 +183,35 @@ class PaymentController extends Controller
             DB::rollback();
             info($e->getMessage());
             return $this->errResponse('Payment could not be verified', 500);
+        }
+    }
+
+
+    private function doBook($day, $user, $data) {
+
+        $data['user_id'] = $user->id;
+        if($day != 'all') {
+            $date = Day::where('day', $day)
+                ->whereYear('event_date', date('Y'))->first()->event_date;
+            $data['event_date'] = $date;
+        }
+
+        //
+        $book = Booked::create($data);
+
+        // Update Day
+        if($day == 'all') {
+            $models = Day::whereYear('event_date', date('Y'))->get();
+            foreach ($models as $key => $model) {
+                $model->total = $model->total + 1;
+                $model->save();
+            }
+        }
+        else {
+            $model = Day::where('day', $day)
+                ->whereYear('event_date', date('Y'))->first();
+            $model->total = $model->total + 1;
+            $model->save();
         }
     }
 

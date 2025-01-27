@@ -1,21 +1,29 @@
 @php
     $dates = [
         "all" => 'All Days',
-        '1' => 'Jan 26th ' . date('Y'),
-        '2' => 'Jan 27th ' . date('Y'),
-        '3' => 'Jan 28th ' . date('Y'),
+        '1' => 'Feb 4th ' . date('Y'),
+        '2' => 'Feb 5th ' . date('Y'),
+        '3' => 'Feb 6th ' . date('Y'),
 
-        '4' => 'Feb 2nd ' . date('Y'),
-        '5' => 'Feb 3rd ' . date('Y'),
-        '6' => 'Feb 4th ' . date('Y'),
+        '4' => 'Feb 7th ' . date('Y'),
+        '5' => 'Feb 8th ' . date('Y'),
+        '6' => 'Feb 9th ' . date('Y'),
 
-        '7' => 'Feb 9th ' . date('Y'),
-        '8' => 'Feb 10th ' . date('Y'),
-        '9' => 'Feb 11th ' . date('Y'),
+        '7' => 'Feb 11th ' . date('Y'),
+        '8' => 'Feb 12th ' . date('Y'),
+        '9' => 'Feb 13th ' . date('Y'),
 
-        '10' => 'Feb 16th ' . date('Y'),
-        '11' => 'Feb 17th ' . date('Y'),
-        '12' => 'Feb 18th ' . date('Y'),
+        '10' => 'Feb 14th ' . date('Y'),
+        '11' => 'Feb 15th ' . date('Y'),
+        '12' => 'Feb 16th ' . date('Y'),
+
+        '13' => 'Feb 18th ' . date('Y'),
+        '14' => 'Feb 19th ' . date('Y'),
+        '15' => 'Feb 20th ' . date('Y'),
+
+        '16' => 'Feb 21st ' . date('Y'),
+        '17' => 'Feb 22nd ' . date('Y'),
+        '18' => 'Feb 23rd ' . date('Y'),
     ]
 @endphp
 

@@ -78,7 +78,7 @@ export default function Book(props) {
 
                                 {
                                     status == 'success' ?
-                                    <Link href='/' className='bg-yellow-500 p-2 px-3 rounded text-white'>Back to Home</Link> :
+                                    <a href='/' className='bg-yellow-500 p-2 px-3 rounded text-white'>Back to Home</a> :
                                     <button className='bg-red-700 p-2 px-5 text-white rounded' onClick={verifyPayment}>Try again</button>
                                 }
                             </div>

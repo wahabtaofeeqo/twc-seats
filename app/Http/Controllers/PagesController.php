@@ -10,6 +10,9 @@ use Inertia\Response;
 use App\Models\Category;
 use App\Models\Booking;
 use App\Models\Booker;
+use App\Models\Booked;
+use App\Models\Seat;
+use App\Models\Day;
 use App\Exports\BookersExport;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -32,6 +35,7 @@ class PagesController extends Controller
         $bookingCount = [];
         $categories = Category::all();
         foreach ($categories as $key => $model) {
+            $model->amount = $this->getPrice();
             $total = Booking::where('category_id', $model->id)->count();
             $bookingCount[] = [
                 'id' => $model->id,
@@ -80,7 +84,41 @@ class PagesController extends Controller
         ]);
     }
 
+    public function days() {
+        $days = Day::whereYear('event_date', date('Y'))->get();
+        return Inertia::render('Days', [
+            'days' => $days,
+            'status' => session('status'),
+        ]);
+    }
+
+    public function seats($day) {
+
+        $seats = Seat::all()->pluck('id');
+        $booked = Booked::where('day', $day)
+            ->orWhere('day', 'all')->whereYear('created_at', date('Y'))->pluck('seat_id');
+
+        return Inertia::render('Seats', [
+            'day' => $day,
+            'seats' => $seats,
+            'booked' => $booked,
+            'status' => session('status'),
+        ]);
+    }
+
     public function exportQR() {
         return Excel::download(new BookersExport, 'attendees.xlsx');
+    }
+
+    private function getPrice() {
+        $day = date('w');
+        $isWeekend = in_array($day, [6, 7, 0]);
+
+        $amount = 5000;
+        if($isWeekend) {
+            $amount = 10000;
+        }
+
+        return $amount;
     }
 }

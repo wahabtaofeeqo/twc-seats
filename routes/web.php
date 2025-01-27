@@ -26,11 +26,12 @@ use Inertia\Inertia;
 // });
 
 Route::get('/', 'IndexController@index');
-Route::get('/login', 'LoginController@login');
-Route::get('/seats', 'IndexController@seats')->name('seats');
-Route::get('/tables', 'IndexController@tables')->name('seats');
-Route::get('/tickets', 'PagesController@tickets')->name('ticket');
-Route::post('/bookings', 'PaymentController@init');
+// Route::get('/login', 'LoginController@login');
+Route::get('/days', 'PagesController@days');
+Route::get('/seats/{id}', 'PagesController@seats');
+Route::get('/tables', 'IndexController@tables');
+Route::get('/tickets', 'PagesController@tickets');
+Route::post('/bookings', 'PaymentController@init')->name('init');
 Route::get('/bookings/verification/{id}', 'PagesController@booked');
 
 // Route::post('/login', 'LoginController@authenticate')->name('login');

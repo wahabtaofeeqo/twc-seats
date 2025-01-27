@@ -52,8 +52,11 @@ class IndexController extends Controller
         $bookedCouchs = [];
 
         if($model) {
-            $bookedSeats = Booked::where('day', $model->day)
-                ->orWhere('day', 'all')->pluck('seat_id')->toArray();
+            $query = Booked::where('day', $model->day)
+                ->orWhere('day', 'all')->with('user');
+
+            $bookeds = $query->get();
+            $bookedSeats = $query->pluck('seat_id')->toArray();
 
             $bookedCouchs = Booked::where('type', 'couch')
                 ->where(function($q) use ($model) {
@@ -65,8 +68,9 @@ class IndexController extends Controller
         //
         return view('index', [
             'seats' => $seats,
+            'bookeds' => $bookeds,
             'couch' => $bookedCouchs,
-            'bookeds' => $bookedSeats,
+            'bookedSeats' => $bookedSeats,
         ]);
     }
 
@@ -259,7 +263,6 @@ class IndexController extends Controller
 
         //
         return view('home', [
-            'days' => $days,
             'bookings' => $bookings,
             'users' => User::count(),
             'totalTickets' => $count,
