@@ -67,7 +67,10 @@ class PaymentController extends Controller
         $request->validate([
             'day' => 'required',
             'name' => 'required|string',
-            'email' => 'required|email'
+            'email' => 'required|email',
+            'color' => 'required|string',
+            'seat_id' => 'required|integer',
+            'seat_number' => 'required|integer',
         ]);
 
         $user = User::firstOrCreate([
@@ -88,16 +91,29 @@ class PaymentController extends Controller
 
         $meta =  [
             'day' => $input['day'],
-            'seat' => $input['seat'],
-            'booker_id' => $booker->id
+            'color' => $input['color'],
+            'booker_id' => $booker->id,
+            'seat_id' => $input['seat_id'],
+            'seat_number' => $input['seat_number']
         ];
 
-        $response = $this->createPayment(25000, $input['email'], $meta);
-        if ($response) {
-            return Inertia::location($response->authorization_url);
+        $dayModel = Day::where('day', $input['day'])
+            ->whereYear('event_date', date('Y'))->first();
+        $dayOfWeek = date('N', strtotime($dayModel->event_date));
+
+        if(!isset($input['tickets']) && ($dayOfWeek >= 1 && $dayOfWeek <= 4)) {
+            $this->doBook($dayModel->day, $user, $meta);
+            return redirect('thanks');
         }
         else {
-            return redirect()->back()->withErrors(['message' => 'Operation not successful. Please try again.']);
+            $amount = isset($input['tickets']) ? $input['amount'] : 25000;
+            $response = $this->createPayment($amount, $input['email'], $meta);
+            if ($response) {
+                return Inertia::location($response->authorization_url);
+            }
+            else {
+                return redirect()->back()->withErrors(['message' => 'Operation not successful. Please try again.']);
+            }
         }
     }
 
@@ -133,25 +149,28 @@ class PaymentController extends Controller
                     //
                     DB::beginTransaction();
 
-                    if($meta->day) {
-                        $input = [
-                            'day' => $meta->day,
-                            'seat_id' => $meta->seat
-                        ];
+                    if($meta->seat_id) {
+                        $input = json_decode(json_encode($meta), true);
                         $user = User::where('email', $booker->email)->first();
                         $this->doBook($meta->day, $user, $input);
                     }
                     else {
                         $model = null;
                         $code = $this->genCode();
+                        $day = Day::where('day', $meta->day)
+                            ->whereYear('event_date', date('Y'))->first();
 
                         // Get Tickets
                         $tickets = Ticket::where('booker_id', $booker->id)->get();
+
+                        // Since the Ticket Type is 1, it doesn't have to be dynamic
+                        $category = Category::latest()->first();
                         $payload = [
                             'code' => $code,
                             'confirmed' => true,
                             'booker_id' => $booker->id,
-                            'category_id' => $tickets[0]->category->id
+                            'event_day' => $day->event_date,
+                            'category_id' => $category->id
                         ];
 
                         //
@@ -185,7 +204,6 @@ class PaymentController extends Controller
             return $this->errResponse('Payment could not be verified', 500);
         }
     }
-
 
     private function doBook($day, $user, $data) {
 

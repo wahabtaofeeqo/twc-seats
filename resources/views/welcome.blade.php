@@ -20,7 +20,7 @@
                     Join us in celebrating 120 years of Polo, with an exceptional calibre of members, at The Lagos Polo Club the premier sporting Polo Club in Nigeria.
                 </p>
                 <div class="d-none d-md-block">
-                    <a href="/tables" class="p-2 border-d px-5 rounded-0 text-white me-3">Book Table</a>
+                    <a href="/tickets" class="p-2 border-d px-5 rounded-0 text-white me-3">Buy Ticket</a>
                     <a href="/days" class="p-2 btn d-inline-block px-5 rounded bg-white text-black">Book a seat</a>
                 </div>
             </div>

@@ -10,11 +10,13 @@ const Seats = ({seats = [], booked = [], day}) => {
 
     const [seat, setSeat] = useState(0);
     const [isOpen, setOpen] = useState(false);
-    const { data, setData, post, processing, errors, reset } = useForm({
-        email: '',
-        name: '',
+    const { data, setData, post, processing, errors } = useForm({
         day: '',
-        seat: 0
+        name: '',
+        email: '',
+        seat_id: 0,
+        color: 'blue',
+        seat_number: 0
     });
 
     const handleOnChange = (event) => {
@@ -27,9 +29,85 @@ const Seats = ({seats = [], booked = [], day}) => {
     };
 
     const book = (seat) => {
-        setSeat(seat);
         setOpen(true);
-        setData('seat', seat);
+        setSeat(seat.number);
+        setData({
+            ...data,
+            seat_id: seat.id,
+            seat_number: seat.number || 0
+        });
+    }
+
+    const groupA = () => {
+        let counter = 35;
+        let elements = [];
+
+        for (let index = 20; index < 41; index++) {
+            let seat = {
+                ...seats[index],
+                number: counter
+            }
+            const element = <div class={"p-1 py-2 rounded shadow-sm text-center " + (booked.includes(seat.id) ? ' bg-red-500 text-white' : ' bg-white text-blue-400 cursor-pointer')}
+            onClick={!booked.includes(seat.id) ? () => book(seat) : null}>
+                <p class="mb-2 small">{booked.includes(seat.id) ? 'Booked' : counter}</p>
+                <i class={"fa-solid fa-chair fa-2xl fa-rotate-180"}></i>
+            </div>
+
+            elements.push(element);
+
+            counter--;
+            if(counter % 7 == 0) counter -= 7;
+        }
+
+        return elements;
+    }
+
+    const groupB = () => {
+        let counter = 42;
+        let elements = [];
+
+        for (let index = 41; index < 62; index++) {
+            let seat = {
+                ...seats[index],
+                number: counter
+            }
+
+            const element = <div class={"p-1 py-2 rounded shadow-sm text-center " + (booked.includes(seat.id) ? ' bg-red-500 text-white' : ' bg-white text-blue-400 cursor-pointer')}
+            onClick={!booked.includes(seat.id) ? () => book(seat) : null}>
+                <p class="mb-2 small">{booked.includes(seat.id) ? 'Booked' : counter}</p>
+                <i class={"fa-solid fa-chair fa-2xl fa-rotate-180"}></i>
+            </div>
+
+            elements.push(element);
+            counter--;
+            if(counter % 7 == 0) counter -= 7;
+        }
+
+        return elements;
+    }
+
+    const groupC = () => {
+        let counter = 62;
+        let elements = [];
+        for (let index = 0; index < 20; index++) {
+            let seat = {
+                ...seats[index],
+                color: 'white',
+                number: counter
+            }
+
+            const element = <div class={"p-1 py-2 rounded shadow-sm text-center " + (booked.includes(seat.id) ? ' bg-red-500 text-white' : ' bg-gray-500 text-white cursor-pointer')}
+            onClick={!booked.includes(seat.id) ? () => book(seat) : null}>
+                <p class="mb-2 small">{booked.includes(seat.id) ? 'Booked' : counter}</p>
+                <i class={"fa-solid fa-chair fa-2xl fa-rotate-180"}></i>
+            </div>
+
+            elements.push(element);
+            counter--;
+            // if(counter % 5 == 0) counter -= 5;
+        }
+
+        return elements;
     }
 
     useEffect(() => {
@@ -38,7 +116,7 @@ const Seats = ({seats = [], booked = [], day}) => {
 
     return (
         <>
-          <Head title="Seats"></Head>
+            <Head title="Seats"></Head>
             <Modal show={isOpen} onClose={() => setOpen(false)}>
                 <div className="p-5">
                     <h4 className="text-2xl font-bold">Seat Number: {seat}</h4>
@@ -85,69 +163,30 @@ const Seats = ({seats = [], booked = [], day}) => {
 
             <div className="min-h-screen bg-gradient-to-r from-cyan-500 to-blue-500 py-3">
                 <div className="max-w-7xl mx-auto p-3">
-                    <img src="/assets/images/seat.jpeg" class="rounded d-none d-md-block w-full h-[400px]" alt="" />
+                    <img src="/assets/images/seat.jpeg" className="rounded d-none d-md-block w-full h-[400px]" alt="" />
                     <h4 className="mb-4 mt-10 text-2xl font-bold text-gray-200 underline">Day {day} of the Event</h4>
 
-                    <div className="md:flex gap-10 justify-between">
-                        <div className="basis-2/5 mb-10 md:mb-0">
-                            <h4 className="text-white text-center text-4xl font-bold mb-4">A</h4>
-                            <div className="grid grid-cols-4 md:grid-cols-6 gap-3">
-                                {
-                                    seats?.slice(0, 12).map(item => {
-                                        return <div class={"p-1 py-2 rounded shadow-sm text-center " + ([1,2,3,4,5,6,7,8,9,10,...booked].includes(item) ? ' bg-red-500 text-white' : ' bg-white cursor-pointer')}
-                                        onClick={!booked.includes(item) ? () => book(item) : null}>
-                                            <p class="mb-2 small">{[1,2,3,4,5,6,7,8,9,10,...booked].includes(item) ? 'Booked' : item}</p>
-                                            <i class={"fa-solid fa-chair fa-2xl fa-rotate-180"}></i>
-                                        </div>
-                                    })
-                                }
+                    <div className="md:flex justify-between">
+                        <div className="basis-3/6 md:pe-10">
+                            <h4 className="text-white text-center text-4xl font-bold mb-4">B</h4>
+                            <div className="grid grid-cols-4 md:grid-cols-7 gap-1">
+                               {groupB()}
                             </div>
                         </div>
 
-                        <div className="basis-2/5">
-                            <h4 className="text-white text-center text-4xl font-bold mb-4">B</h4>
-                            <div className="grid grid-cols-4 md:grid-cols-6 gap-3">
-                                {
-                                    seats?.slice(12, 24).map(item => {
-                                        return <div class={"p-1 py-2 rounded shadow-sm text-center " + (booked.includes(item) ? ' bg-red-500 text-white' : ' bg-white cursor-pointer')}
-                                        onClick={!booked.includes(item) ? () => book(item) : null}>
-                                            <p class="mb-2 small">{booked.includes(item) ? 'Booked' : item}</p>
-                                            <i class={"fa-solid fa-chair fa-2xl fa-rotate-180"}></i>
-                                        </div>
-                                    })
-                                }
+                        <div className="basis-3/6 mb-10 md:mb-0 md:ps-10">
+                            <h4 className="text-white text-center text-4xl font-bold mb-4">A</h4>
+                            <div className="grid grid-cols-4 md:grid-cols-7 gap-1">
+                                {groupA()}
                             </div>
                         </div>
                     </div>
 
-                    <div className="md:flex gap-3 mt-10 justify-between">
-                        <div className="basis-2/5 mb-10 md:mb-0">
+                    <div className="md:flex mt-10 justify-end">
+                        <div className="basis-2/4 mb-10 md:mb-0 md:ps-10">
                             <h4 className="text-white text-center text-4xl font-bold mb-4">C</h4>
-                            <div className="grid grid-cols-4 md:grid-cols-6 gap-3">
-                                {
-                                    seats?.slice(24, 36).map(item => {
-                                        return <div class={"p-1 py-2 rounded shadow-sm text-center " + (booked.includes(item) ? ' bg-red-500 text-white' : ' bg-white cursor-pointer')}
-                                        onClick={!booked.includes(item) ? () => book(item) : null}>
-                                            <p class="mb-2 small">{booked.includes(item) ? 'Booked' : item}</p>
-                                            <i class={"fa-solid fa-chair fa-2xl fa-rotate-180"}></i>
-                                        </div>
-                                    })
-                                }
-                            </div>
-                        </div>
-
-                        <div className="basis-2/5">
-                            <h4 className="text-white text-center text-4xl font-bold mb-4">D</h4>
-                            <div className="grid grid-cols-4 md:grid-cols-6 gap-3">
-                                {
-                                    seats?.slice(36, 48).map(item => {
-                                        return <div class={"p-1 py-2 rounded shadow-sm text-center " + (booked.includes(item) ? ' bg-red-500 text-white' : ' bg-white cursor-pointer')}
-                                        onClick={!booked.includes(item) ? () => book(item) : null}>
-                                            <p class="mb-2 small">{booked.includes(item) ? 'Booked' : item}</p>
-                                            <i class={"fa-solid fa-chair fa-2xl fa-rotate-180"}></i>
-                                        </div>
-                                    })
-                                }
+                            <div className="grid grid-cols-4 md:grid-cols-5 gap-1">
+                                {groupC()}
                             </div>
                         </div>
                     </div>

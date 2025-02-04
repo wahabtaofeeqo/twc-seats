@@ -31,18 +31,17 @@ Route::get('/days', 'PagesController@days');
 Route::get('/seats/{id}', 'PagesController@seats');
 Route::get('/tables', 'IndexController@tables');
 Route::get('/tickets', 'PagesController@tickets');
+Route::get('/thanks', 'PagesController@thanks')->name('thanks');
 Route::post('/bookings', 'PaymentController@init')->name('init');
 Route::get('/bookings/verification/{id}', 'PagesController@booked');
-
-// Route::post('/login', 'LoginController@authenticate')->name('login');
-// Route::get('/dashboard', function () {
-//     return Inertia::render('Dashboard');
-// })->middleware(['auth', 'verified'])->name('dashboard');
+Route::put('/bookings', 'BookController@update')->name('bookeds.update');
 
 Route::group(['prefix' => 'dashboard', 'middleware' => ['auth']], function () {
     Route::get('/', 'IndexController@dash')->name('dashboard');
     Route::get('/tickets', 'IndexController@tickets')->name('tickets');
     Route::get('/export-qr', 'PagesController@exportQr')->name('export');
+    Route::get('/acceptance/{id}/{action}', 'PagesController@acceptance');
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');

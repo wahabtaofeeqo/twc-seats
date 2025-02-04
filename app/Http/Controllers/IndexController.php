@@ -55,7 +55,7 @@ class IndexController extends Controller
             $query = Booked::where('day', $model->day)
                 ->orWhere('day', 'all')->with('user');
 
-            $bookeds = $query->get();
+            $bookeds = $query->get()->toArray();
             $bookedSeats = $query->pluck('seat_id')->toArray();
 
             $bookedCouchs = Booked::where('type', 'couch')
@@ -255,19 +255,42 @@ class IndexController extends Controller
 
     public function dash()
     {
+        $seats = Seat::all();
         $bookings = Booked::with('user')
             ->latest()->paginate(10);
 
         $days = Day::all();
         $count = Ticket::where('user_id', '!=', null)->count();
 
-        //
-        return view('home', [
-            'bookings' => $bookings,
-            'users' => User::count(),
-            'totalTickets' => $count,
-            'totalBookings' => Booked::count()
+        $stats = [
+            [
+                'name' => 'Users',
+                'total' => User::count(),
+            ],
+            [
+                'name' => 'Bookings',
+                'total' => Booked::count(),
+            ],
+            [
+                'name' => 'Tickets',
+                'total' => $count
+            ]
+        ];
+
+        return Inertia::render('Dashboard', [
+            'seats' => $seats,
+            'stats' => $stats,
+            'models' => $bookings,
+            'status' => session('status'),
         ]);
+
+        //
+        // return view('home', [
+        //     'bookings' => $bookings,
+        //     'users' => User::count(),
+        //     'totalTickets' => $count,
+        //     'totalBookings' => Booked::count()
+        // ]);
     }
 
     public function tickets()

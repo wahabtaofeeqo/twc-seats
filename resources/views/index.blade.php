@@ -10,10 +10,9 @@
                 Join us in celebrating 120 years of Polo, with an exceptional calibre of members, at The Lagos Polo Club the premier sporting Polo Club in Nigeria.
             </p>
 
-            <div class="mb-4 ">
+            <div class="mb-4">
                 <img src="{{asset('assets/images/seat.jpeg')}}" class="rounded d-none d-md-block" style="width: 100%; height: 400px;" alt="">
-
-                <div class="card d-none border-dark">
+                <div class="card d-md-none border-dark">
                     <img src="{{asset('assets/images/plan2.jpeg')}}" class="card-img-top" style="width: 100%; height: 400px;" alt="">
                     <div class="card-body">
                         <p class="mb-0">
@@ -26,13 +25,13 @@
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-lg-5 mb-4 px-0">
-                        <h1 class="text-center text-white">A</h1>
-                        <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 5px;" class="mb-5">
+                        <h1 class="text-center text-white">B</h1>
+                        <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px;">
                             @php
-                                $counter = 48;
+                                $counter = 42;
                             @endphp
 
-                            @for ($i = 37; $i < 49; $i++)
+                            @for ($i = 41; $i < 62; $i++)
                                 @php
                                     $seat = $seats[$i];
                                 @endphp
@@ -40,41 +39,13 @@
                                 <div class="pointer available" data-id="{{$seat->id}}" data-color="blue" data-number="{{$counter}}" data-type="chair">
                                     <div class="p-1 py-2 bg-white rounded box text-center">
                                         <p class="mb-2 small">{{$counter}}</p>
-                                        <i class="fa-solid fa-chair fa-2xl fa-rotate-180 {{in_array($seat->id, $bookedSeats) ? 'text-danger' : 'text-primary'}}"></i>
+                                        <i class="fa-solid fa-chair fa-2xl fa-rotate-180 {{in_array($seat->id, $bookeds) ? 'text-danger' : 'text-primary'}}"></i>
                                     </div>
                                 </div>
 
                                 @php
                                     $counter--;
-                                    if($counter % 6 == 0) $counter -= 6
-                                @endphp
-                            @endfor
-                        </div>
-
-                        <h1 class="text-center text-white">B</h1>
-                        <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 5px;">
-                            @php
-                                $counter = 24;
-                            @endphp
-
-                            @for ($i = 12; $i < 24; $i++)
-                                @php
-                                    $seat = $seats[$i];
-                                @endphp
-
-                                <div class="pointer available" data-id="{{$seat->id}}" data-color="blue" data-number="{{$counter}}" data-type="chair">
-                                    <div class="p-1 py-2 bg-white rounded box text-center">
-                                        <p class="mb-2 small">
-                                            {{$counter}}
-
-                                        </p>
-                                        <i class="fa-solid fa-chair fa-2xl fa-rotate-180 {{in_array($seat->id, $bookedSeats) ? 'text-danger' : 'text-primary'}}"></i>
-                                    </div>
-                                </div>
-
-                                @php
-                                    $counter--;
-                                    if($counter % 6 == 0) $counter -= 6
+                                    if($counter % 7 == 0) $counter -= 7
                                 @endphp
                             @endfor
                         </div>
@@ -83,13 +54,13 @@
                     <hr class="text-white d-lg-none">
 
                     <div class="col-lg-5 ms-auto px-0">
-                        <h1 class="text-center text-white">C</h1>
-                        <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 5px;" class="mb-5">
+                        <h1 class="text-center text-white">A</h1>
+                        <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px;">
                             @php
-                                $counter = 42;
+                                $counter = 35;
                             @endphp
 
-                            @for ($i = 25; $i < 37; $i++)
+                            @for ($i = 20; $i < 41; $i++)
                                 @php
                                     $seat = $seats[$i];
                                 @endphp
@@ -97,38 +68,13 @@
                                 <div class="pointer available" data-id="{{$seat->id}}" data-color="blue" data-number="{{$counter}}" data-type="chair">
                                     <div class="p-1 py-2 bg-white rounded box text-center">
                                         <p class="mb-2 small">{{$counter}}</p>
-                                        <i class="fa-solid fa-chair fa-2xl fa-rotate-180 {{in_array($seat->id, $bookedSeats) ? 'text-danger' : 'text-primary'}}"></i>
+                                        <i class="fa-solid fa-chair fa-2xl fa-rotate-180 {{in_array($seat->id, $bookeds) ? 'text-danger' : 'text-primary'}}"></i>
                                     </div>
                                 </div>
 
                                 @php
                                     $counter--;
-                                    if($counter % 6 == 0) $counter -= 6
-                                @endphp
-                            @endfor
-                        </div>
-
-                        <h1 class="text-center text-white">D</h1>
-                        <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 5px;">
-                            @php
-                                $counter = 18;
-                            @endphp
-
-                            @for ($i = 0; $i < 12; $i++)
-                                @php
-                                    $seat = $seats[$i];
-                                @endphp
-
-                                <div class="pointer available" data-id="{{$seat->id}}" data-color="blue" data-number="{{$counter}}" data-type="chair">
-                                    <div class="p-1 py-2 bg-white rounded box text-center">
-                                        <p class="mb-2 small">{{$counter}}</p>
-                                        <i class="fa-solid fa-chair fa-2xl fa-rotate-180 {{in_array($seat->id, $bookedSeats) ? 'text-danger' : 'text-primary'}}"></i>
-                                    </div>
-                                </div>
-
-                                @php
-                                    $counter--;
-                                    if($counter % 6 == 0) $counter -= 6
+                                    if($counter % 7 == 0) $counter -= 7
                                 @endphp
                             @endfor
                         </div>
@@ -156,16 +102,16 @@
                     </div>
 
                     <hr class="text-white d-lg-none">
-                    <div class="col-lg-5 ms-auto px-0 d-none">
+                    <div class="col-lg-5 ms-auto px-0">
                         <h1 class="text-center text-white">C</h1>
                         <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px;">
                             @for ($i = 0; $i < 20; $i++)
                                 @php
                                     $seat = $seats[$i];
                                 @endphp
-                                <div class="col pointer {{in_array($seat->id, $bookedSeats) ? 'booked' : 'available'}}" data-type="chair" data-id="{{$seat->id}}" data-color="white">
+                                <div class="col pointer {{in_array($seat->id, $bookeds) ? 'booked' : 'available'}}" data-type="chair" data-id="{{$seat->id}}" data-color="white">
                                     <div class="p-1 py-2 bg-secondary rounded box text-center">
-                                        <i class="fa-solid fa-chair fa-2xl fa-rotate-180 {{in_array($seat->id, $bookedSeats) ? 'text-danger' : 'text-white'}}"></i>
+                                        <i class="fa-solid fa-chair fa-2xl fa-rotate-180 {{in_array($seat->id, $bookeds) ? 'text-danger' : 'text-white'}}"></i>
                                     </div>
                                 </div>
                             @endfor

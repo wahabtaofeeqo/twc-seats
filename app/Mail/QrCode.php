@@ -43,7 +43,7 @@ class QrCode extends Mailable
     public function content(): Content
     {
         return new Content(
-            markdown: 'mail.qr-code',
+            markdown: 'emails.qr-code',
         );
     }
 

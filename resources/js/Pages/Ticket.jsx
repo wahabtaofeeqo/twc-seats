@@ -1,10 +1,11 @@
 import CheckoutForm from "@/Components/CheckoutForm";
 import { Head, Link, useForm } from "@inertiajs/react";
+import moment from "moment";
 import { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 
 
-const Ticket = ({categories = [], bookings = []}) => {
+const Ticket = ({categories = [], bookings = [], days = []}) => {
 
     const [tickets, setTickets] = useState([]);
     const [isCheckout, setCheckout] = useState(false);
@@ -15,8 +16,13 @@ const Ticket = ({categories = [], bookings = []}) => {
         lastname: '',
         email: '',
         phone: '',
+        name: '',
+        day: 0,
         quantity: 1,
-        category_id: '',
+        // Not needed for this type of booking though
+        seat_id: 0,
+        color: 'blue',
+        seat_number: 0,
         tickets: [],
         amount: 0,
         coupon: '',
@@ -82,8 +88,15 @@ const Ticket = ({categories = [], bookings = []}) => {
     const onContinue = () => {
         if(getTicketCount() == 0) {
             toast.warn('You need to select a Ticket to book');
+            return;
         }
-        else setCheckout(true);
+
+        if(data.day == 0) {
+            toast.warn('You need to select a Day');
+            return;
+        }
+
+        setCheckout(true);
     }
 
     const addInvitee = () => {
@@ -169,15 +182,24 @@ const Ticket = ({categories = [], bookings = []}) => {
         return model.is_sold ?? false;
     }
 
+    const format = (date) => {
+        return moment(date).format("MMM Do");
+    }
+
+    const setDay = (model) => {
+        setData('day', model.day);
+    }
+
     useEffect(() => {
-        if(tickets.length) {
+        if(tickets.length || data.firstname || data.lastname) {
             setData({
                 ...data,
                 amount: getTotal(),
-                quantity: getTicketCount()
+                quantity: getTicketCount(),
+                name: data.firstname + ' ' + data.lastname
             });
         }
-    }, [tickets]);
+    }, [tickets, data.firstname, data.lastname]);
 
     return (
         <>
@@ -220,6 +242,19 @@ const Ticket = ({categories = [], bookings = []}) => {
                     :
                     (
                         <div className="p-3">
+                            <div className="mb-4">
+                                <p className="mb-4 text-lg text-white font-bold">Select a Day to proceed</p>
+                                <div className="grid grid-cols-5 md:grid-cols-10 gap-3">
+                                    {
+                                        days.map(item => {
+                                            return <button onClick={() => setDay(item)} className={"bg-white h-10 cursor-pointer shadow-sm rounded font-bold text-sm text-blue-500 flex items-center justify-center" + (data.day == item.day ? ' border-2 border-red-500' : '')}>
+                                                {format(item.event_date)}
+                                            </button>
+                                        })
+                                    }
+                                </div>
+                            </div>
+
                             {
                                 categories.map((item, index) => {
                                     return (

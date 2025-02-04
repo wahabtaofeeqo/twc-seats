@@ -80,7 +80,9 @@
                                             <i class="fa-solid fa-chair"></i>
                                         @endif
                                     </td>
-                                    <td>{{$row->seat_number || 'NA'}}</td>
+                                    <td>
+                                        {{$row->seat_number ?? 'NA'}}
+                                    </td>
                                     <td>
                                         {{
                                             $row->confirmed ? 'Confirmed' : 'Pending'
