@@ -17,6 +17,10 @@ export default function Dashboard({auth, models, stats = [], seats = [] }) {
         // return moment(model.created_at).format('MMMM Do YYYY');
     }
 
+    const getDate = (model) => {
+        return moment(model.created_at).format('MMMM Do YYYY');
+    }
+
     return (
         <AuthenticatedLayout auth={auth}>
             <Head title="Dashboard" />
@@ -70,6 +74,7 @@ export default function Dashboard({auth, models, stats = [], seats = [] }) {
                                         <th scope="col" className="px-6 py-3">Day</th>
                                         <th scope="col" className="px-6 py-3">Type</th>
                                         <th scope="col" className="px-6 py-3">Number</th>
+                                        <th scope="col" className="px-6 py-3">Date</th>
                                         <th scope="col" className="px-6 py-3">Status</th>
                                         <th scope="col" className="px-6 py-3">Action</th>
                                     </tr>
@@ -91,6 +96,7 @@ export default function Dashboard({auth, models, stats = [], seats = [] }) {
                                                         }
                                                     </td>
                                                     <td className="px-6 py-4"> {model.seat_number ?? 'NA'} </td>
+                                                    <td className="px-6 py-4"> {getDate(model)} </td>
                                                     <td>
                                                         {model.confirmed ? 'Confirmed' : 'Pending'}
                                                     </td>

@@ -1,5 +1,5 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import moment from 'moment';
 import PageLink from '@/Components/PageLink';
 import { useState } from 'react';
@@ -72,8 +72,8 @@ export default function Tickets({ auth, models, stats = [] }) {
                                         {/* <th scope="col" className="px-6 py-3">Phone</th> */}
                                         <th scope="col" className="px-6 py-3">Type</th>
                                         <th scope="col" className="px-6 py-3">Buyer</th>
-                                        <th scope="col" className="px-6 py-3">Total</th>
                                         <th scope="col" className="px-6 py-3">Date</th>
+                                        <th scope="col" className="px-6 py-3">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -86,8 +86,18 @@ export default function Tickets({ auth, models, stats = [] }) {
                                                     <td className="px-6 py-4"> {model.booker.email} </td>
                                                     <td className="px-6 py-4"> {model.category?.name || 'NA'} </td>
                                                     <td className="px-6 py-4"> {model.booker.is_buyer ? 'YES' : 'NO'} </td>
-                                                    <td className="px-6 py-4"> {getTotalTickets(model)}</td>
+                                                    {/* <td className="px-6 py-4"> {getTotalTickets(model)}</td> */}
                                                     <td className="px-6 py-4"> {getDate(model) || 'N/A'} </td>
+                                                    <td>
+                                                        {/* <button className='py-1 px-2 bg-sky-500 text-xs text-white rounded'>Send</button> */}
+                                                        <Link href={'/dashboard/send-qr/' + model.id} className="p-1 px-2 rounded text-xs bg-blue-500 text-white">
+                                                            <i className="fas fa-envelope me-2"></i> Send QR
+                                                        </Link>
+
+                                                        <a className='ms-2'  href={'/dashboard/download-qr/' + model.id}>
+                                                            <i className='fas fa-download'></i>
+                                                        </a>
+                                                    </td>
                                                 </tr>
                                             )
                                         })

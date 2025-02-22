@@ -295,12 +295,11 @@ class IndexController extends Controller
 
     public function tickets()
     {
-        $tickets = Ticket::with('user')
-            ->where('user_id', '!=', null)->paginate(20);
+        // $tickets = Ticket::with('user')
+        //     ->where('user_id', '!=', null)->paginate(20);
+        // $count = Ticket::where('user_id', '!=', null)->count();
 
-        $count = Ticket::where('user_id', '!=', null)->count();
-
-        $models = Booking::with('booker', 'booker.tickets', 'category')
+        $models = Booking::with('booker', 'category')
             ->latest()->paginate(10);
 
         $stats = [];

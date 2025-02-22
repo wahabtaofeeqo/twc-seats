@@ -99,8 +99,22 @@ class PaymentController extends Controller
 
         $dayModel = Day::where('day', $input['day'])
             ->whereYear('event_date', date('Y'))->first();
-        $dayOfWeek = date('N', strtotime($dayModel->event_date));
 
+        if(!isset($input['tickets'])) {
+            // Check if the person has not booked for the selected day
+            $day = $dayModel->day;
+            $hasBooked = Booked::where('user_id', $user->id)
+                ->where(function($q) use ($day) {
+                    $q->where('day', $day)
+                        ->orWhere('day', 'all');
+                })->whereYear('created_at', date('Y'))->exists();
+
+            if($hasBooked) {
+                return redirect()->back()->withErrors(['message' => 'You already booked for this day: ' . $dayModel->event_date])->withInput();
+            }
+        }
+
+        $dayOfWeek = date('N', strtotime($dayModel->event_date));
         if(!isset($input['tickets']) && ($dayOfWeek >= 1 && $dayOfWeek <= 4)) {
             $this->doBook($dayModel->day, $user, $meta);
             return redirect('thanks');
@@ -161,7 +175,7 @@ class PaymentController extends Controller
                             ->whereYear('event_date', date('Y'))->first();
 
                         // Get Tickets
-                        $tickets = Ticket::where('booker_id', $booker->id)->get();
+                        // $tickets = Ticket::where('booker_id', $booker->id)->get();
 
                         // Since the Ticket Type is 1, it doesn't have to be dynamic
                         $category = Category::latest()->first();
@@ -309,26 +323,19 @@ class PaymentController extends Controller
 
     public function sendQr($id)
     {
-        $code = $this->genCode();
-        $booker = Booker::find($id);
-        $tickets = Ticket::where('booker_id', $booker->id)->get();
+        $model = Booking::with([
+            'booker', 'category'])->find($id);
 
-        $payload = [
-            'code' => $code,
-            'confirmed' => true,
-            'booker_id' => $booker->id,
-            'category_id' => $tickets[0]->category->id
-        ];
-
-        //
-        $model = Booking::create($payload);
         $this->sendTickets($model, false);
 
-        // Update the Booker Model
-        $booker->confirmed = true;
-        $booker->save();
+        return to_route('tickets');
+    }
 
-        return to_route('dashboard.bookers');
+    public function downloadQr($id)
+    {
+        $model = Booking::with(['booker'])->find($id);
+        $path = 'qrcode/' . $model->booker->email . '/qrcode.png';
+        return response()->download(public_path($path));
     }
 
     function createUser(Request $request) {

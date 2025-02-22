@@ -41,6 +41,8 @@ Route::group(['prefix' => 'dashboard', 'middleware' => ['auth']], function () {
     Route::get('/tickets', 'IndexController@tickets')->name('tickets');
     Route::get('/export-qr', 'PagesController@exportQr')->name('export');
     Route::get('/acceptance/{id}/{action}', 'PagesController@acceptance');
+    Route::get('/download-qr/{id}', 'PaymentController@downloadQr');
+    Route::get('/send-qr/{id}', 'PaymentController@sendQr')->name('dashboard.sendqr');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

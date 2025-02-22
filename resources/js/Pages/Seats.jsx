@@ -151,13 +151,16 @@ const Seats = ({seats = [], booked = [], day}) => {
 
                             <InputError message={errors.email} className="mt-2" />
                         </div>
-
+                        {
+                            errors?.message && <div className="text-red-500 font-bold mt-2">{errors.message}</div>
+                        }
                         <div className="flex items-center justify-end mt-8">
                             <PrimaryButton className="p-4" disabled={processing}>
                                 Make Payment
                             </PrimaryButton>
                         </div>
                     </form>
+
                 </div>
             </Modal>
 
